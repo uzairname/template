@@ -1,6 +1,5 @@
 {
 	"$schema": "../../packages/utils/wrangler-config-schema.json",
-	"name": "template",
 	"main": ".open-next/worker.js",
   "compatibility_date": "2025-03-01",
   "compatibility_flags": [
@@ -16,8 +15,10 @@
   },
   "env": {
     "development": {
+      "name": "template-dev"
     },
     "production": {
+      "name": "template"
     }
   }
 }
