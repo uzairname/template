@@ -69,6 +69,7 @@ jobs:
         # For each pair, use 'gh secret set' to create/update the secret.
         # The '-b' flag passes the value directly.
         run: |
+          set -e -o pipefail
           echo "$JSON_OUTPUT" | jq -r 'to_entries| .[] | .key + " " + .value' | \
           while read key value; do
             echo "Setting secret: $key"
