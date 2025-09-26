@@ -75,10 +75,9 @@ async function createProject() {
     })
   })
 
-  const projectRef = data.ref;
+  const projectRef = data.id;
   return { projectRef, password };
 }
-
 
 async function getKeys(projectRef) {
 

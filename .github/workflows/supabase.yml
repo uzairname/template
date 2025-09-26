@@ -6,7 +6,7 @@ on:
       project_name:
         description: 'The name for the new Supabase project.'
         required: true
-        default: 'my-new-app'
+        default: 'project'
       region:
         description: 'The region for the Supabase project.'
         required: true
