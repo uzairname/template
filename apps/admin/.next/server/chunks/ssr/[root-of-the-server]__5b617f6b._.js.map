@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 14, "column": 0}, "map": {"version":3,"sources":["file:///Users/uz/projects/template/apps/admin/app/page.tsx"],"sourcesContent":["\nexport default function Home() {\n  return (\n    <div className=\"font-sans items-center justify-items-center min-h-screen p-20\">\n      <main className=\"flex flex-col gap-[32px] items-center sm:items-start\">\n        hello\n      </main>\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;;AACe,SAAS;IACtB,qBACE,6WAAC;QAAI,WAAU;kBACb,cAAA,6WAAC;YAAK,WAAU;sBAAuD;;;;;;;;;;;AAK7E","debugId":null}}]
-}

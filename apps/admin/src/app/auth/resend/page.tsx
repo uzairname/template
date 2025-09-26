@@ -73,7 +73,7 @@ export default function ResendConfirmationPage() {
             Resend Confirmation
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your email address and we'll send you a new confirmation link.
+            Enter your email address and we&apos;ll send you a new confirmation link.
           </CardDescription>
         </CardHeader>
         

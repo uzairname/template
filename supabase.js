@@ -1,9 +1,6 @@
-import { config } from 'dotenv';
-import fs from 'fs';
 import { parseArgs } from 'util';
 
-
-// Required env variables: 
+// Required env variables:
 /**
  * SUPABASE_BEARER_TOKEN
  * SUPABASE_ORG_ID
@@ -14,17 +11,6 @@ import { parseArgs } from 'util';
  * --name (required)
  * --region (optional, default: us-east-1)
  */
-
-
-const envFilePath = './apps/admin/.dev.vars';
-// create the file if it doesn't exist
-if (!fs.existsSync(envFilePath)) {
-  fs.writeFileSync(envFilePath, '');
-}
-
-config({
-  path: envFilePath
-});
 
 // Parse command line arguments using util.parseArgs
 const { values: argMap } = parseArgs({
@@ -51,28 +37,6 @@ if (!process.env.SUPABASE_ORG_ID) {
   console.error(`SUPABASE_ORG_ID is missing in ${envFilePath}`);
   process.exit(1);
 }
-
-
-async function setEnvFileVar(key, value) {
-
-  if (!key || !value) {
-    return;
-  }
-
-  // Add or replace a variable in the .env file
-  const envFile = fs.readFileSync(envFilePath, 'utf-8');
-
-  let newEnvFile = envFile;
-
-  if (envFile.includes(`${key}=`)) {
-    newEnvFile = newEnvFile.replace(new RegExp(`${key}=.*`), `${key}=${value}`);
-  } else {
-    newEnvFile += `\n${key}=${value}`;
-  }
-
-  fs.writeFileSync(envFilePath, newEnvFile);
-}
-
 
 async function fetchSupabase(endpoint, options) {
   const res = await fetch(`https://api.supabase.io/v1${endpoint}`, {
@@ -120,7 +84,6 @@ async function createProject() {
 async function getKeys(projectRef) {
 
   async function getExistingKeys() {
-
     const data = await fetchSupabase(`/projects/${projectRef}/api-keys`, { method: 'GET' })
     return data
   }
@@ -189,18 +152,20 @@ async function getKeys(projectRef) {
   return { publishableKey, secretKey };
 }
 
-
 async function main() {
-
   const { projectRef, password } = await createProject();
-  await setEnvFileVar('PROJECT_REF', projectRef);
-  await setEnvFileVar('SUPABASE_URL', `https://${projectRef}.supabase.co`);
-  await setEnvFileVar('SUPABASE_DB_PASSWORD', password);
+  const supabaseUrl = `https://${projectRef}.supabase.co`;
 
   const { publishableKey, secretKey } = await getKeys(projectRef);
 
-  await setEnvFileVar('SUPABASE_PUBLISHABLE_KEY', publishableKey);
-  await setEnvFileVar('SUPABASE_SECRET_KEY', secretKey);
+  // Return the variables in JSON format so that they can be used in GitHub Actions
+  console.log(JSON.stringify({
+    SUPABASE_PROJECT_REF: projectRef,
+    SUPABASE_DB_PASSWORD: password,
+    SUPABASE_URL: supabaseUrl,
+    SUPABASE_PUBLISHABLE_KEY: publishableKey,
+    SUPABASE_SECRET_KEY: secretKey,
+  }, null, 2));
 }
 
 main().then(() => process.exit(0))

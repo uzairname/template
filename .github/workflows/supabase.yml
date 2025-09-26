@@ -1,0 +1,69 @@
+name: 'Provision Supabase Project'
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: 'The name for the new Supabase project.'
+        required: true
+        default: 'my-new-app'
+      region:
+        description: 'The region for the Supabase project.'
+        required: true
+        default: 'us-east-1'
+
+jobs:
+  supabase:
+    runs-on: ubuntu-latest
+    
+    # Grant permission to write secrets to the repository
+    permissions:
+      actions: write
+      contents: read
+
+    # Pass Supabase credentials to all steps in this job
+    env:
+      SUPABASE_BEARER_TOKEN: ${{ secrets.SUPABASE_BEARER_TOKEN }}
+      SUPABASE_ORG_ID: ${{ secrets.SUPABASE_ORG_ID }}
+
+    steps:
+      - name: 'Checkout Code'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: 'Setup pnpm'
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: true
+
+      - name: 'Run Provisioning Script and Capture Output'
+        id: provision_supabase
+        run: |
+          # Run the script and capture its JSON output.
+          # We send it to $GITHUB_OUTPUT to make it available to other steps.
+          echo "json_output=$(node supabase.js --name "${{ github.event.inputs.project_name }}" --region "${{ github.event.inputs.region }}")" >> "$GITHUB_OUTPUT"
+
+      - name: 'Parse Output and Create/Update Secrets'
+        env:
+          # The gh CLI needs a token with write permissions for secrets.
+          GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
+          
+          # Get the JSON output from the previous step.
+          JSON_OUTPUT: ${{ steps.provision_supabase.outputs.json_output }}
+        run: |
+          echo "Parsing JSON and setting secrets..."
+          
+          # Use jq to parse the JSON and loop through each key-value pair.
+          # For each pair, use 'gh secret set' to create/update the secret.
+          # The '-b' flag passes the value directly.
+          echo "$JSON_OUTPUT" | jq -r 'to_entries| .[] | .key + " " + .value' | \
+          while read key value; do
+            echo "Setting secret: $key"
+            gh secret set "$key" -b"$value"
+          done

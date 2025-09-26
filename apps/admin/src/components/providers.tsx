@@ -14,9 +14,7 @@ export function Providers({
       enableSystem
       disableTransitionOnChange
     >
-      <SidebarProvider>
         {children}
-      </SidebarProvider>
     </NextThemesProvider>
   );
 }

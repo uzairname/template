@@ -9,15 +9,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarProvider,
   SidebarTrigger,
   useSidebar,
 } from "@repo/ui/components/sidebar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@repo/ui/components/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@repo/ui/components/dropdown-menu";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { SignupDialog } from "@/components/auth/signup-dialog";
 import { useAuth } from "@/hooks/use-auth";
 
-export default function Home() {
+function HomeContent() {
+
   const { isMobile } = useSidebar();
   const { user, signOut } = useAuth();
 
@@ -101,4 +103,12 @@ export default function Home() {
       </SidebarInset>
     </>
   );
+}
+
+export default function Home() {
+  return (
+    <SidebarProvider>
+      <HomeContent />
+    </SidebarProvider>
+  )
 }

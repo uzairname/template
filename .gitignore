@@ -2,6 +2,7 @@
 .vscode
 .turbo
 .next
+.open-next
 
 # dependencies
 node_modules

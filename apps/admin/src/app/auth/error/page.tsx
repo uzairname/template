@@ -1,10 +1,11 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import { AuthErrorCard, createAuthErrorDetails } from '@/components/auth/auth-error-card';
 import { ErrorLayout } from '@/components/ui/error-layout';
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -22,9 +23,15 @@ export default function AuthErrorPage() {
     onTrySignIn: () => router.push('/'),
   });
 
+  return <AuthErrorCard errorDetails={errorDetails} />;
+}
+
+export default function AuthErrorPage() {
   return (
     <ErrorLayout>
-      <AuthErrorCard errorDetails={errorDetails} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <AuthErrorContent />
+      </Suspense>
     </ErrorLayout>
   );
 }

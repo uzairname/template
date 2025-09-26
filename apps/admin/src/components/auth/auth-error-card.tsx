@@ -2,7 +2,7 @@
 
 import { Button } from "@repo/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
-import { AlertCircle, Mail } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { cn } from "@repo/ui/lib/utils";
 
 export interface AuthErrorAction {
