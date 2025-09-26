@@ -25,6 +25,11 @@ jobs:
     env:
       SUPABASE_BEARER_TOKEN: ${{ secrets.SUPABASE_BEARER_TOKEN }}
       SUPABASE_ORG_ID: ${{ secrets.SUPABASE_ORG_ID }}
+      # Pass existing secrets to the script. They will be empty strings if not set.
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
 
     steps:
       - name: 'Checkout Code'
@@ -45,8 +50,6 @@ jobs:
       - name: 'Run Provisioning Script and Capture Output'
         id: provision_supabase
         run: |
-          # Run the script and capture its JSON output.
-          # We send it to $GITHUB_OUTPUT to make it available to other steps.
           echo "json_output=$(node supabase.js --name "${{ github.event.inputs.project_name }}" --region "${{ github.event.inputs.region }}")" >> "$GITHUB_OUTPUT"
 
       - name: 'Parse Output and Create/Update Secrets'
@@ -56,12 +59,11 @@ jobs:
           
           # Get the JSON output from the previous step.
           JSON_OUTPUT: ${{ steps.provision_supabase.outputs.json_output }}
+
+        # Use jq to parse the JSON and loop through each key-value pair.
+        # For each pair, use 'gh secret set' to create/update the secret.
+        # The '-b' flag passes the value directly.
         run: |
-          echo "Parsing JSON and setting secrets..."
-          
-          # Use jq to parse the JSON and loop through each key-value pair.
-          # For each pair, use 'gh secret set' to create/update the secret.
-          # The '-b' flag passes the value directly.
           echo "$JSON_OUTPUT" | jq -r 'to_entries| .[] | .key + " " + .value' | \
           while read key value; do
             echo "Setting secret: $key"

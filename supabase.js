@@ -59,8 +59,8 @@ async function fetchSupabase(endpoint, options) {
 
 async function createProject() {
 
-  if (process.env.SUPABASE_PROJECT_REF && process.env.SUPABASE_DB_PASSWORD) {
-    return { projectRef: process.env.SUPABASE_PROJECT_REF, password: process.env.SUPABASE_DB_PASSWORD };
+  if (process.env.SUPABASE_PROJECT_ID && process.env.SUPABASE_DB_PASSWORD) {
+    return { projectId: process.env.SUPABASE_PROJECT_ID, password: process.env.SUPABASE_DB_PASSWORD };
   }
 
   const password = crypto.randomUUID();
@@ -75,14 +75,14 @@ async function createProject() {
     })
   })
 
-  const projectRef = data.id;
-  return { projectRef, password };
+  const projectId = data.id;
+  return { projectId, password };
 }
 
-async function getKeys(projectRef) {
+async function getKeys(projectId) {
 
   async function getExistingKeys() {
-    const data = await fetchSupabase(`/projects/${projectRef}/api-keys`, { method: 'GET' })
+    const data = await fetchSupabase(`/projects/${projectId}/api-keys`, { method: 'GET' })
     return data
   }
 
@@ -98,7 +98,7 @@ async function getKeys(projectRef) {
 
     // create a new publishable key and return it
 
-    const data = await fetchSupabase(`/projects/${projectRef}/api-keys`, {
+    const data = await fetchSupabase(`/projects/${projectId}/api-keys`, {
       method: 'POST',
       body: JSON.stringify({
         type: 'publishable',
@@ -109,7 +109,7 @@ async function getKeys(projectRef) {
     return data.api_key;
   }
 
-  async function getSecretKey(projectRef, existingKeys) {
+  async function getSecretKey(projectId, existingKeys) {
     if (process.env.SUPABASE_SECRET_KEY) {
       return process.env.SUPABASE_SECRET_KEY;
     }
@@ -119,14 +119,14 @@ async function getKeys(projectRef) {
     const existingSecretKey = existingKeys.find((key) => key.type === 'secret' && key.name === 'default');
     
     if (existingSecretKey) {
-      await fetchSupabase(`/projects/${projectRef}/api-keys/${existingSecretKey.id}`, {
+      await fetchSupabase(`/projects/${projectId}/api-keys/${existingSecretKey.id}`, {
         method: 'DELETE',
       });
     }
     
     // Create a new secret key and return it
 
-    const data = await fetchSupabase(`/projects/${projectRef}/api-keys?reveal=true`, {
+    const data = await fetchSupabase(`/projects/${projectId}/api-keys?reveal=true`, {
       method: 'POST',
       body: JSON.stringify({
         type: 'secret',
@@ -142,19 +142,19 @@ async function getKeys(projectRef) {
 
   const existingKeys = await getExistingKeys();
   const publishableKey = await getPublishableKey(existingKeys);
-  const secretKey = await getSecretKey(projectRef, existingKeys);
+  const secretKey = await getSecretKey(projectId, existingKeys);
   return { publishableKey, secretKey };
 }
 
 async function main() {
-  const { projectRef, password } = await createProject();
-  const supabaseUrl = `https://${projectRef}.supabase.co`;
+  const { projectId: projectId, password } = await createProject();
+  const supabaseUrl = `https://${projectId}.supabase.co`;
 
-  const { publishableKey, secretKey } = await getKeys(projectRef);
+  const { publishableKey, secretKey } = await getKeys(projectId);
 
   // Return the variables in JSON format so that they can be used in GitHub Actions
   console.log(JSON.stringify({
-    SUPABASE_PROJECT_REF: projectRef,
+    SUPABASE_PROJECT_ID: projectId,
     SUPABASE_DB_PASSWORD: password,
     SUPABASE_URL: supabaseUrl,
     SUPABASE_PUBLISHABLE_KEY: publishableKey,
