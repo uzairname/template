@@ -134,10 +134,7 @@ async function getKeys(projectId) {
       }),
     });
 
-    console.log(data);
-  
     return data.api_key
-
   }
 
   const existingKeys = await getExistingKeys();
