@@ -24,10 +24,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           cd apps/admin
-          echo "${{ secrets.SUPABASE_SECRET_KEY }}" | npx wrangler secret put SUPABASE_SECRET_KEY
-          echo "${{ secrets.SUPABASE_PUBLISHABLE_KEY }}" | npx wrangler secret put SUPABASE_PUBLISHABLE_KEY
-          echo "${{ secrets.SUPABASE_DB_PASSWORD }}" | npx wrangler secret put SUPABASE_DB_PASSWORD
-          echo "${{ secrets.SUPABASE_PROJECT_ID }}" | npx wrangler secret put SUPABASE_PROJECT_ID
+          echo "${{ secrets.SUPABASE_SECRET_KEY }}" | npx wrangler secret put --env production SUPABASE_SECRET_KEY
+          echo "${{ secrets.SUPABASE_PUBLISHABLE_KEY }}" | npx wrangler secret put --env production SUPABASE_PUBLISHABLE_KEY
+          echo "${{ secrets.SUPABASE_DB_PASSWORD }}" | npx wrangler secret put --env production SUPABASE_DB_PASSWORD
+          echo "${{ secrets.SUPABASE_PROJECT_ID }}" | npx wrangler secret put --env production SUPABASE_PROJECT_ID
 
       - name: Deploy to Cloudflare Workers
         env:
