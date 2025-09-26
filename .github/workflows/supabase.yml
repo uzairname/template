@@ -49,8 +49,13 @@ jobs:
 
       - name: 'Run Provisioning Script and Capture Output'
         id: provision_supabase
+        # Use a heredoc to safely capture multi-line JSON output
         run: |
-          echo "json_output=$(node supabase.js --name "${{ github.event.inputs.project_name }}" --region "${{ github.event.inputs.region }}")" >> "$GITHUB_OUTPUT"
+          {
+            echo 'json_output<<EOF'
+            node supabase.js --name "${{ github.event.inputs.project_name }}" --region "${{ github.event.inputs.region }}"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: 'Parse Output and Create/Update Secrets'
         env:
