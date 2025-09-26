@@ -1,0 +1,6 @@
+{
+  "name": "@repo/utils",
+  "version": "1.0.0",
+  "main": "index.js",
+  "packageManager": "pnpm@10.17.1"
+}

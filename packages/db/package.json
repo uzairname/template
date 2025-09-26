@@ -1,0 +1,9 @@
+{
+  "name": "@repo/db",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.17.1",
+  "exports": {
+    "./*": "./src/*.ts",
+    ".": "./src/index.ts"
+  }
+}
