@@ -3,6 +3,7 @@
 .turbo
 .next
 .open-next
+copilot-intructions.md
 
 # dependencies
 node_modules
