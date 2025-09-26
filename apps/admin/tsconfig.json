@@ -6,6 +6,10 @@
       "dom.iterable",
       "esnext"
     ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@repo/ui/*": ["../../packages/ui/src/*"], // Needed for `pnpm dlx shadcn@latest add` command to work properly
+    },
     "plugins": [
       {
         "name": "next"
@@ -17,5 +21,5 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ]
+, "../../packages/utils/src/result.ts"  ]
 }

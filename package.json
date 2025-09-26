@@ -2,6 +2,7 @@
   "name": "template",
   "version": "1.0.0",
   "packageManager": "pnpm@10.17.1",
+  "type": "module",
   "scripts": {
     "dev": "turbo run dev",
     "lint": "turbo run lint",

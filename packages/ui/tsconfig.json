@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@repo/ui/*": ["./src/*"] // Needed for `pnpm dlx shadcn@latest add` command to work properly
+    }
+  }
+}

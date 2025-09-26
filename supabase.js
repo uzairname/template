@@ -1,0 +1,206 @@
+import { config } from 'dotenv';
+import fs from 'fs';
+import { parseArgs } from 'util';
+
+
+// Required env variables: 
+/**
+ * SUPABASE_BEARER_TOKEN
+ * SUPABASE_ORG_ID
+ */
+
+// Arguments:
+/**
+ * --name (required)
+ * --region (optional, default: us-east-1)
+ */
+
+
+const envFilePath = './apps/admin/.dev.vars';
+// create the file if it doesn't exist
+if (!fs.existsSync(envFilePath)) {
+  fs.writeFileSync(envFilePath, '');
+}
+
+config({
+  path: envFilePath
+});
+
+// Parse command line arguments using util.parseArgs
+const { values: argMap } = parseArgs({
+  options: {
+    'name': { type: 'string', required: true },
+    'region': { type: 'string', default: 'us-east-1' },
+  },
+  allowPositionals: false,
+});
+
+const projectName = argMap['name'];
+const region = argMap['region'];
+
+if (!projectName) {
+  throw new Error('Project name is required');
+}
+
+if (!process.env.SUPABASE_BEARER_TOKEN) {
+  console.error(`SUPABASE_BEARER_TOKEN is missing in ${envFilePath}`);
+  process.exit(1);
+}
+
+if (!process.env.SUPABASE_ORG_ID) {
+  console.error(`SUPABASE_ORG_ID is missing in ${envFilePath}`);
+  process.exit(1);
+}
+
+
+async function setEnvFileVar(key, value) {
+
+  if (!key || !value) {
+    return;
+  }
+
+  // Add or replace a variable in the .env file
+  const envFile = fs.readFileSync(envFilePath, 'utf-8');
+
+  let newEnvFile = envFile;
+
+  if (envFile.includes(`${key}=`)) {
+    newEnvFile = newEnvFile.replace(new RegExp(`${key}=.*`), `${key}=${value}`);
+  } else {
+    newEnvFile += `\n${key}=${value}`;
+  }
+
+  fs.writeFileSync(envFilePath, newEnvFile);
+}
+
+
+async function fetchSupabase(endpoint, options) {
+  const res = await fetch(`https://api.supabase.io/v1${endpoint}`, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${process.env.SUPABASE_BEARER_TOKEN}`,
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Error fetching ${endpoint}: ${res.status} ${res.statusText} - ${errorText}`);
+  }
+
+  return res.json();
+}
+
+
+async function createProject() {
+
+  if (process.env.SUPABASE_PROJECT_REF && process.env.SUPABASE_DB_PASSWORD) {
+    console.log('Project already exists, skipping creation');
+    return { projectRef: process.env.SUPABASE_PROJECT_REF, password: process.env.SUPABASE_DB_PASSWORD };
+  }
+
+  const password = crypto.randomUUID();
+
+  const data = await fetchSupabase('/projects', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: projectName,
+      organization_id: process.env.SUPABASE_ORG_ID,
+      region: region,
+      db_pass: password
+    })
+  })
+
+  const projectRef = data.ref;
+  return { projectRef, password };
+}
+
+
+async function getKeys(projectRef) {
+
+  async function getExistingKeys() {
+
+    const data = await fetchSupabase(`/projects/${projectRef}/api-keys`, { method: 'GET' })
+    return data
+  }
+
+  async function getPublishableKey(existingKeys) {
+    if (process.env.SUPABASE_PUBLISHABLE_KEY) {
+      console.log('Publishable key already exists, skipping creation');
+      return process.env.SUPABASE_PUBLISHABLE_KEY;
+    }
+
+    const existingPublishableKey = existingKeys.find((key) => key.type === 'publishable' && key.name === 'default')?.api_key;
+    if (existingPublishableKey) {
+      console.log('Publishable key already exists, skipping creation');
+      return existingPublishableKey;
+    }
+
+    // create a new publishable key and return it
+
+    const data = await fetchSupabase(`/projects/${projectRef}/api-keys`, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'publishable',
+        name: `default`
+      }),
+    });
+
+    return data.api_key;
+  }
+
+  async function getSecretKey(projectRef, existingKeys) {
+    if (process.env.SUPABASE_SECRET_KEY) {
+      console.log('Secret key already exists, skipping creation');
+      return process.env.SUPABASE_SECRET_KEY;
+    }
+
+    // if the key already exists, delete it first
+    
+    const existingSecretKey = existingKeys.find((key) => key.type === 'secret' && key.name === 'default');
+    
+    if (existingSecretKey) {
+      console.log('Secret key already exists, deleting it first');
+      await fetchSupabase(`/projects/${projectRef}/api-keys/${existingSecretKey.id}`, {
+        method: 'DELETE',
+      });
+    }
+    
+    // Create a new secret key and return it
+
+    const data = await fetchSupabase(`/projects/${projectRef}/api-keys?reveal=true`, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'secret',
+        name: `default`
+      }),
+    });
+
+    console.log(data);
+  
+    return data.api_key
+
+  }
+
+  const existingKeys = await getExistingKeys();
+  const publishableKey = await getPublishableKey(existingKeys);
+  const secretKey = await getSecretKey(projectRef, existingKeys);
+  return { publishableKey, secretKey };
+}
+
+
+async function main() {
+
+  const { projectRef, password } = await createProject();
+  await setEnvFileVar('PROJECT_REF', projectRef);
+  await setEnvFileVar('SUPABASE_URL', `https://${projectRef}.supabase.co`);
+  await setEnvFileVar('SUPABASE_DB_PASSWORD', password);
+
+  const { publishableKey, secretKey } = await getKeys(projectRef);
+
+  await setEnvFileVar('SUPABASE_PUBLISHABLE_KEY', publishableKey);
+  await setEnvFileVar('SUPABASE_SECRET_KEY', secretKey);
+}
+
+main().then(() => process.exit(0))

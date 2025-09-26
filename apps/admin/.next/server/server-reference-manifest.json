@@ -1,5 +1,39 @@
 {
-  "node": {},
+  "node": {
+    "60fa6c59d432194b2969fd0fe058d23bb3ad483733": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/apps/admin/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/admin/src/lib/login-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "7072231898e355259abffd064edbb1254cbc61cdf6": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/apps/admin/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/admin/src/lib/login-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "40a2c19f0021cd647678db955c33801f07296025a4": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/apps/admin/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/apps/admin/src/lib/login-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    }
+  },
   "edge": {},
   "encryptionKey": "p6iJad8aob63Ntg7wuyC+lZ5NNesua9y5dLJpHELU38="
 }

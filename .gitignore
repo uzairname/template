@@ -1,7 +1,7 @@
 
 .vscode
 .turbo
-
+.next
 
 # dependencies
 node_modules
