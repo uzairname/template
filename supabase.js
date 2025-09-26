@@ -29,12 +29,12 @@ if (!projectName) {
 }
 
 if (!process.env.SUPABASE_BEARER_TOKEN) {
-  console.error(`SUPABASE_BEARER_TOKEN is missing in ${envFilePath}`);
+  console.error(`SUPABASE_BEARER_TOKEN is required in env`);
   process.exit(1);
 }
 
 if (!process.env.SUPABASE_ORG_ID) {
-  console.error(`SUPABASE_ORG_ID is missing in ${envFilePath}`);
+  console.error(`SUPABASE_ORG_ID is required in env`);
   process.exit(1);
 }
 
@@ -60,7 +60,6 @@ async function fetchSupabase(endpoint, options) {
 async function createProject() {
 
   if (process.env.SUPABASE_PROJECT_REF && process.env.SUPABASE_DB_PASSWORD) {
-    console.log('Project already exists, skipping creation');
     return { projectRef: process.env.SUPABASE_PROJECT_REF, password: process.env.SUPABASE_DB_PASSWORD };
   }
 
@@ -90,13 +89,11 @@ async function getKeys(projectRef) {
 
   async function getPublishableKey(existingKeys) {
     if (process.env.SUPABASE_PUBLISHABLE_KEY) {
-      console.log('Publishable key already exists, skipping creation');
       return process.env.SUPABASE_PUBLISHABLE_KEY;
     }
 
     const existingPublishableKey = existingKeys.find((key) => key.type === 'publishable' && key.name === 'default')?.api_key;
     if (existingPublishableKey) {
-      console.log('Publishable key already exists, skipping creation');
       return existingPublishableKey;
     }
 
@@ -115,7 +112,6 @@ async function getKeys(projectRef) {
 
   async function getSecretKey(projectRef, existingKeys) {
     if (process.env.SUPABASE_SECRET_KEY) {
-      console.log('Secret key already exists, skipping creation');
       return process.env.SUPABASE_SECRET_KEY;
     }
 
@@ -124,7 +120,6 @@ async function getKeys(projectRef) {
     const existingSecretKey = existingKeys.find((key) => key.type === 'secret' && key.name === 'default');
     
     if (existingSecretKey) {
-      console.log('Secret key already exists, deleting it first');
       await fetchSupabase(`/projects/${projectRef}/api-keys/${existingSecretKey.id}`, {
         method: 'DELETE',
       });
@@ -169,3 +164,10 @@ async function main() {
 }
 
 main().then(() => process.exit(0))
+
+
+// Example command to run this script with dotenv
+
+/*
+pnpm exec dotenv -e .env -- node supabase.js --name test
+*/
