@@ -17,7 +17,6 @@ function AuthErrorContent() {
     reason,
     errorMessage,
     missing,
-    onRequestNew: () => router.push('/auth/resend'),
     onGoHome: () => router.push('/'),
     onTryAgain: () => router.refresh(),
     onTrySignIn: () => router.push('/'),

@@ -20,11 +20,10 @@ export interface AuthError {
   message: string;
 }
 
-// Helper function to create auth errors with suggestions
+// Helper function to create auth errors
 export const createAuthError = (
   type: AuthErrorType, 
   message: string, 
-  suggestion?: 'login' | 'signup'
 ): AuthError => ({
   type,
   message,
@@ -44,7 +43,6 @@ export const parseSupabaseError = (errorMessage: string): AuthError => {
     return createAuthError(
       AuthErrorType.INVALID_CREDENTIALS,
       'Invalid email or password.',
-      'signup'
     );
   }
   
@@ -52,7 +50,6 @@ export const parseSupabaseError = (errorMessage: string): AuthError => {
     return createAuthError(
       AuthErrorType.USER_NOT_FOUND,
       'No account found with this email.',
-      'signup'
     );
   }
   
@@ -68,7 +65,6 @@ export const parseSupabaseError = (errorMessage: string): AuthError => {
     return createAuthError(
       AuthErrorType.USER_ALREADY_EXISTS,
       'An account with this email already exists.',
-      'login'
     );
   }
   

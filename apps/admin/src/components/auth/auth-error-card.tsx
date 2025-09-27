@@ -63,7 +63,6 @@ export function createAuthErrorDetails({
   reason,
   errorMessage,
   missing,
-  onRequestNew,
   onGoHome,
   onTryAgain,
   onTrySignIn,
@@ -71,7 +70,6 @@ export function createAuthErrorDetails({
   reason: string | null;
   errorMessage?: string | null;
   missing?: string | null;
-  onRequestNew: () => void;
   onGoHome: () => void;
   onTryAgain: () => void;
   onTrySignIn: () => void;
@@ -84,11 +82,6 @@ export function createAuthErrorDetails({
         details: `Missing parameters: ${missing}`,
         icon: <AlertCircle className="h-8 w-8 text-muted-foreground" />,
         actions: [
-          {
-            label: 'Request New Link',
-            action: onRequestNew,
-            variant: 'default',
-          },
           {
             label: 'Go Home',
             action: onGoHome,
@@ -109,11 +102,6 @@ export function createAuthErrorDetails({
         details: errorMessage || 'Unknown verification error occurred.',
         icon: <AlertCircle className="h-8 w-8 text-destructive" />,
         actions: [
-          {
-            label: 'Request New Confirmation',
-            action: onRequestNew,
-            variant: 'default',
-          },
           {
             label: 'Try Signing In',
             action: onTrySignIn,

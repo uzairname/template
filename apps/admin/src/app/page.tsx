@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { SignupDialog } from "@/components/auth/signup-dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { User, UserCheck } from "lucide-react";
 
 function HomeContent() {
 
@@ -45,7 +46,19 @@ function HomeContent() {
                     size="lg"
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
-                    {user ? user.email : "Not signed in"}
+                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                        {user ? <UserCheck className="h-4 w-4" /> : <User className="h-4 w-4" />}
+                      </div>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-semibold">
+                          {user ? user.email : "Not signed in"}
+                        </span>
+                        <span className="truncate text-xs text-sidebar-foreground/70">
+                          {user ? "Account" : "Guest"}
+                        </span>
+                      </div>
+                    </div>
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
 

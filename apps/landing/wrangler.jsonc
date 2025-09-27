@@ -1,6 +1,6 @@
 {
 	"$schema": "../../packages/utils/wrangler-config-schema.json",
-	"name": "template-admin",
+	"name": "template-landing",
 	"main": ".open-next/worker.js",
   "compatibility_date": "2025-03-01",
   "compatibility_flags": [
@@ -16,8 +16,8 @@
   },
   "env": {
     "production": {
-      // "route": { "pattern": "admin.example.com", "custom_domain": true },
-      "name": "template-admin"
+      // "route": { "pattern": "www.example.com", "custom_domain": true },
+      "name": "template-landing"
     }
   }
 }

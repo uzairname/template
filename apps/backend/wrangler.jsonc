@@ -1,0 +1,18 @@
+{
+	"$schema": "../../packages/utils/wrangler-config-schema.json",
+	"name": "template-api",
+	"main": "src/index.ts",
+  "compatibility_date": "2025-03-01",
+  "compatibility_flags": [
+    "nodejs_compat",
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "env": {
+    "production": {
+      // "route": { "pattern": "api.example.com", "custom_domain": true },
+      "name": "template-api"
+    }
+  }
+}
