@@ -17,11 +17,7 @@
   "env": {
     "production": {
       // "route": { "pattern": "admin.example.com", "custom_domain": true },
-      "name": "template-admin",
-      "vars": {
-        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_Pd1lP2AfBSCTIo5gLD0HmA_ZHto9i9w",
-        "NEXT_PUBLIC_SUPABASE_URL": "https://eqnagvvtqipxmbodpbyn.supabase.co",
-      }
+      "name": "template-admin"
     }
   }
 }
