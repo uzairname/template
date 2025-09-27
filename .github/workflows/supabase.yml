@@ -47,9 +47,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: 'Run Provisioning Script and Capture Output'
+      - name: 'Create Supabase Project'
         id: provision_supabase
-        # Use a heredoc to safely capture multi-line JSON output
         run: |
           {
             echo 'json_output<<EOF'
@@ -57,17 +56,10 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
-      - name: 'Parse Output and Create/Update Secrets'
+      - name: 'Update Secrets'
         env:
-          # The gh CLI needs a token with write permissions for secrets.
           GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
-          
-          # Get the JSON output from the previous step.
           JSON_OUTPUT: ${{ steps.provision_supabase.outputs.json_output }}
-
-        # Use jq to parse the JSON and loop through each key-value pair.
-        # For each pair, use 'gh secret set' to create/update the secret.
-        # The '-b' flag passes the value directly.
         run: |
           set -e -o pipefail
           echo "$JSON_OUTPUT" | jq -r 'to_entries| .[] | .key + " " + .value' | \
