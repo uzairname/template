@@ -32,8 +32,6 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
         run: |
           cd apps/admin
-          echo "SUPABASE_URL is: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}"
-          echo "SUPABASE_KEY is: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY != '' }}"
           pnpm run deploy
 
       - name: Publish secrets to Cloudflare Worker
