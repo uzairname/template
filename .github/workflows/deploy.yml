@@ -30,7 +30,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           cd apps/admin
-          npx opennextjs-cloudflare deploy
+          pnpm run deploy
 
       - name: Publish secrets to Cloudflare Worker
         env:
