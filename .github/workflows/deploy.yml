@@ -6,6 +6,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,21 +22,16 @@ jobs:
         run: npm install -g wrangler
 
       - name: Deploy to Cloudflare Workers
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           cd apps/admin
-          wrangler deploy --env production
+          pnpm run deploy --env production
 
       - name: Publish secrets to Cloudflare Worker
-        env: 
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           cd apps/admin
           echo "${{ secrets.SUPABASE_SECRET_KEY }}" | npx wrangler secret put --env production SUPABASE_SECRET_KEY
-          echo "${{ secrets.SUPABASE_PUBLISHABLE_KEY }}" | npx wrangler secret put --env production SUPABASE_PUBLISHABLE_KEY
+          echo "${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}" | npx wrangler secret put --env production SUPABASE_PUBLISHABLE_KEY
+          echo "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" | npx wrangler secret put --env production SUPABASE_URL
           echo "${{ secrets.SUPABASE_DB_PASSWORD }}" | npx wrangler secret put --env production SUPABASE_DB_PASSWORD
           echo "${{ secrets.SUPABASE_PROJECT_ID }}" | npx wrangler secret put --env production SUPABASE_PROJECT_ID
 

@@ -1,16 +1,32 @@
 import { parseArgs } from 'util';
+import { config } from 'dotenv';
+import crypto from 'crypto';
 
-// Required env variables:
 /**
- * SUPABASE_BEARER_TOKEN
- * SUPABASE_ORG_ID
- */
 
-// Arguments:
-/**
- * --name (required)
- * --region (optional, default: us-east-1)
- */
+This script is used to create a new Supabase project for production deployment
+
+It returns the following variables in JSON format:
+- SUPABASE_PROJECT_ID
+- SUPABASE_DB_PASSWORD
+- SUPABASE_URL
+- SUPABASE_PUBLISHABLE_KEY
+- SUPABASE_SECRET_KEY
+Any of the above variables that are already set in the environment will be reused instead of creating new resources
+
+These variables can be used in GitHub Actions or other CI/CD pipelines
+
+Required env variables to run the script:
+- SUPABASE_BEARER_TOKEN
+- SUPABASE_ORG_ID
+
+Arguments:
+--name (required): The name of the Supabase project to create
+--region (optional, default: us-east-1): The region to create the Supabase project in
+
+Example usage:
+node supabase.js --name test
+*/
 
 // Parse command line arguments using util.parseArgs
 const { values: argMap } = parseArgs({
@@ -20,6 +36,9 @@ const { values: argMap } = parseArgs({
   },
   allowPositionals: false,
 });
+
+// Try to read environment variables .env if it exists
+config();
 
 const projectName = argMap['name'];
 const region = argMap['region'];
@@ -58,7 +77,6 @@ async function fetchSupabase(endpoint, options) {
 
 
 async function createProject() {
-
   if (process.env.SUPABASE_PROJECT_ID && process.env.SUPABASE_DB_PASSWORD) {
     return { projectId: process.env.SUPABASE_PROJECT_ID, password: process.env.SUPABASE_DB_PASSWORD };
   }
@@ -161,9 +179,3 @@ async function main() {
 
 main().then(() => process.exit(0))
 
-
-// Example command to run this script with dotenv
-
-/*
-pnpm exec dotenv -e .env -- node supabase.js --name test
-*/
