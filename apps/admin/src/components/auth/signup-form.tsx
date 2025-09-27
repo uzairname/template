@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Label } from "@repo/ui/components/label";
-import { signup, checkUserExists } from "@/lib/login-actions";
-import { AuthError, AuthErrorType } from "@/lib/auth-errors";
+import { signup } from "@/lib/login-actions";
+import { AuthError } from "@/lib/auth-errors";
 import { z } from "zod";
 
 const signupSchema = z.object({
@@ -67,70 +67,31 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
     return false;
   };
 
+
   const handleFieldChange = (field: keyof SignupFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear auth errors when user starts typing
-    if (authError) {
-      setAuthError(null);
-    }
+    setAuthError(null);
   };
 
   const handleSubmit = async () => {
-    // Always validate and show errors on submit attempt
+    // Validate and show errors on submit attempt
     setShowValidationErrors(true);
     
-    if (!validateForm()) {
-      return;
-    }
+    // Do nothing if form is invalid
+    if (!validateForm()) return;
 
     setLoading(true);
     setAuthError(null);
 
-    try {
-      // Check if user already exists
-      const userExistsResult = await checkUserExists(formData.email);
-      
-      if (!userExistsResult.success) {
-        setAuthError(userExistsResult.error);
-        setLoading(false);
-        return;
-      }
+    const result = await signup(formData.email, formData.password, formData.name);
 
-      if (userExistsResult.data.exists) {
-        setAuthError({
-          type: AuthErrorType.USER_ALREADY_EXISTS,
-          message: "An account with this email already exists. Please sign in instead.",
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Proceed with signup
-      const result = await signup(formData.email, formData.password, formData.name);
-
-      if (result.success) {
-        onSuccess?.();
-      } else {
-        setAuthError(result.error);
-      }
-    } catch (error) {
-      setAuthError({
-        type: AuthErrorType.UNKNOWN_ERROR,
-        message: "An unexpected error occurred. Please try again.",
-      });
+    if (result.success) {
+      onSuccess?.();
+    } else {
+      setAuthError(result.error);
     }
 
     setLoading(false);
-  };
-
-  const isFormValid = () => {
-    return formData.name.trim() && 
-           formData.email.trim() && 
-           formData.password && 
-           formData.confirmPassword && 
-           formData.password === formData.confirmPassword && 
-           Object.keys(validationErrors).length === 0;
   };
 
   return (
@@ -206,7 +167,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
       <Button
         type="button"
         onClick={handleSubmit}
-        disabled={loading || !isFormValid()}
+        disabled={loading}
         className="w-full"
       >
         {loading ? "Creating Account..." : "Create Account"}

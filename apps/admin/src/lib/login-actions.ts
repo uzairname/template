@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 import { Result, ok, err } from '@repo/utils/result'
 import { AuthError, parseSupabaseError, unknownAuthError } from '@/lib/auth-errors'
+import { nonNullable } from '@repo/utils'
 
 export async function login(email: string, password: string): Promise<Result<void, AuthError>> {
   try {
@@ -13,6 +14,7 @@ export async function login(email: string, password: string): Promise<Result<voi
     const { error: supabaseError } = await supabase.auth.signInWithPassword(data)
 
     if (supabaseError) {
+      console.log("Login error:", supabaseError.message)
       return err(parseSupabaseError(supabaseError.message))
     }
 
@@ -24,33 +26,6 @@ export async function login(email: string, password: string): Promise<Result<voi
   }
 }
 
-export async function checkUserExists(email: string): Promise<Result<{ exists: boolean }, AuthError>> {
-  try {
-    const supabase = await createClient()
-    
-    // Try to get user by email using the admin API if available
-    // For most cases, we can check by attempting a password reset which will tell us if user exists
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'http://localhost:3000', // This won't be sent, we just need to check if user exists
-    })
-
-    if (error) {
-      // If the error indicates user doesn't exist, that's what we wanted to know
-      if (error.message.toLowerCase().includes('user not found') || 
-          error.message.toLowerCase().includes('email not found')) {
-        return ok({ exists: false })
-      }
-      // For other errors, we can't determine existence, so return the error
-      return err(parseSupabaseError(error.message))
-    }
-
-    // If no error, user likely exists
-    return ok({ exists: true })
-  } catch (error) {
-    console.error("Unexpected error checking user existence:", error)
-    return err(unknownAuthError)
-  }
-}
 
 export async function signup(email: string, password: string, name?: string): Promise<Result<void, AuthError>> {
   try {
@@ -82,6 +57,51 @@ export async function signup(email: string, password: string, name?: string): Pr
     return ok()
   } catch (error) {
     console.error("Unexpected error during signup:", error)
+    return err(unknownAuthError)
+  }
+}
+
+export async function resetPassword(email: string): Promise<Result<void, AuthError>> {
+  try {
+    const supabase = await createClient()
+
+    const baseUrl = nonNullable(process.env.NEXT_PUBLIC_ADMIN_BASE_URL, "NEXT_PUBLIC_ADMIN_BASE_URL is not set")
+
+    const { error: supabaseError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${baseUrl}/auth/update-password`,
+    })
+
+    console.log('Password reset email sent to:', email)
+
+    if (supabaseError) {
+      console.log("Password reset error:", supabaseError.message)
+      return err(parseSupabaseError(supabaseError.message))
+    }
+
+    return ok()
+  } catch (error) {
+    console.error("Unexpected error during password reset:", error)
+    return err(unknownAuthError)
+  }
+}
+
+export async function updatePassword(password: string): Promise<Result<void, AuthError>> {
+  try {
+    const supabase = await createClient()
+
+    const { error: supabaseError } = await supabase.auth.updateUser({
+      password: password
+    })
+
+    if (supabaseError) {
+      console.log("Password update error:", supabaseError.message)
+      return err(parseSupabaseError(supabaseError.message))
+    }
+
+    revalidatePath('/', 'layout')
+    return ok()
+  } catch (error) {
+    console.error("Unexpected error during password update:", error)
     return err(unknownAuthError)
   }
 }

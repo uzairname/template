@@ -31,7 +31,7 @@ function HomeContent() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-                <span className="text-base font-semibold">Title</span>
+                <span className="text-base font-semibold">Template, Inc.</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

@@ -20,8 +20,6 @@ export function LoginDialog({ children }: LoginDialogProps) {
 
   const handleSuccess = () => {
     setOpen(false);
-    // Optionally refresh the page or update UI state
-    window.location.reload();
   };
 
   return (
@@ -36,7 +34,9 @@ export function LoginDialog({ children }: LoginDialogProps) {
             Enter your credentials to access your account or create a new one.
           </DialogDescription>
         </DialogHeader>
-        <LoginForm onSuccess={handleSuccess} />
+        <LoginForm 
+          onSuccess={handleSuccess} 
+        />
       </DialogContent>
     </Dialog>
   );

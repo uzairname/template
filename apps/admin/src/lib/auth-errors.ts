@@ -7,11 +7,8 @@ export enum AuthErrorType {
   
   // Signup errors
   USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS',
-  WEAK_PASSWORD = 'WEAK_PASSWORD',
-  INVALID_EMAIL = 'INVALID_EMAIL',
   
   // General errors
-  NETWORK_ERROR = 'NETWORK_ERROR',
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
@@ -67,29 +64,7 @@ export const parseSupabaseError = (errorMessage: string): AuthError => {
       'An account with this email already exists.',
     );
   }
-  
-  if (msg.includes('password') && (msg.includes('weak') || msg.includes('short') || msg.includes('characters'))) {
-    return createAuthError(
-      AuthErrorType.WEAK_PASSWORD,
-      'Password is too weak. Please use at least 6 characters.'
-    );
-  }
-  
-  if (msg.includes('invalid email') || msg.includes('email format')) {
-    return createAuthError(
-      AuthErrorType.INVALID_EMAIL,
-      'Please enter a valid email address.'
-    );
-  }
-  
-  // Network/connection errors
-  if (msg.includes('network') || msg.includes('connection') || msg.includes('fetch')) {
-    return createAuthError(
-      AuthErrorType.NETWORK_ERROR,
-      'Connection error. Please check your internet and try again.'
-    );
-  }
-  
+
   // Fallback for unknown errors
   return createAuthError(
     AuthErrorType.UNKNOWN_ERROR,

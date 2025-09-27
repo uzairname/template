@@ -20,8 +20,6 @@ export function SignupDialog({ children }: SignupDialogProps) {
 
   const handleSuccess = () => {
     setOpen(false);
-    // Optionally refresh the page or update UI state
-    window.location.reload();
   };
 
   return (
