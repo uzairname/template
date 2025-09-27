@@ -9,8 +9,8 @@ This script is used to create a new Supabase project for production deployment
 It returns the following variables in JSON format:
 - SUPABASE_PROJECT_ID
 - SUPABASE_DB_PASSWORD
-- SUPABASE_URL
-- SUPABASE_PUBLISHABLE_KEY
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 - SUPABASE_SECRET_KEY
 Any of the above variables that are already set in the environment will be reused instead of creating new resources
 
@@ -105,8 +105,8 @@ async function getKeys(projectId) {
   }
 
   async function getPublishableKey(existingKeys) {
-    if (process.env.SUPABASE_PUBLISHABLE_KEY) {
-      return process.env.SUPABASE_PUBLISHABLE_KEY;
+    if (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+      return process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     }
 
     const existingPublishableKey = existingKeys.find((key) => key.type === 'publishable' && key.name === 'default')?.api_key;
@@ -171,9 +171,9 @@ async function main() {
   console.log(JSON.stringify({
     SUPABASE_PROJECT_ID: projectId,
     SUPABASE_DB_PASSWORD: password,
-    SUPABASE_URL: supabaseUrl,
-    SUPABASE_PUBLISHABLE_KEY: publishableKey,
     SUPABASE_SECRET_KEY: secretKey,
+    NEXT_PUBLIC_SUPABASE_URL: supabaseUrl,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
   }, null, 2));
 }
 
