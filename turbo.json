@@ -14,11 +14,8 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
-    "deploy:dev": {
-      "dependsOn": ["^deploy:dev"]
-    },
-    "deploy:prod": {
-      "dependsOn": ["^deploy:prod"]
+    "deploy": {
+      "dependsOn": ["^deploy"]
     }
   }
 }

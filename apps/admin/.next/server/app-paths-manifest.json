@@ -1,4 +1,7 @@
 {
+  "/auth/confirm/route": "app/auth/confirm/route.js",
   "/_not-found/page": "app/_not-found/page.js",
+  "/auth/resend/page": "app/auth/resend/page.js",
+  "/auth/error/page": "app/auth/error/page.js",
   "/page": "app/page.js"
 }

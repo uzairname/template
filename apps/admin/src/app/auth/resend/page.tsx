@@ -43,7 +43,7 @@ export default function ResendConfirmationPage() {
         setStatus('success');
         setMessage('Confirmation email sent! Please check your inbox and spam folder.');
       }
-    } catch (err) {
+    } catch {
       setStatus('error');
       setMessage('An unexpected error occurred. Please try again.');
     } finally {
