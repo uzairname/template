@@ -20,23 +20,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install Wrangler CLI
-        run: pnpm install -g wrangler
-
-      - name: Deploy to Cloudflare Workers
+      - name: Deploy App
         run: pnpm run deploy
 
       - name: Publish secrets to Cloudflare Worker
         run: |
           cd apps/admin
           echo "${{ secrets.SUPABASE_SECRET_KEY }}" | npx wrangler secret put --env production SUPABASE_SECRET_KEY
-          echo "${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}" | npx wrangler secret put --env production SUPABASE_PUBLISHABLE_KEY
-          echo "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" | npx wrangler secret put --env production SUPABASE_URL
+          echo "${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}" | npx wrangler secret put --env production NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+          echo "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" | npx wrangler secret put --env production NEXT_PUBLIC_SUPABASE_URL
           echo "${{ secrets.SUPABASE_DB_PASSWORD }}" | npx wrangler secret put --env production SUPABASE_DB_PASSWORD
           echo "${{ secrets.SUPABASE_PROJECT_ID }}" | npx wrangler secret put --env production SUPABASE_PROJECT_ID
-

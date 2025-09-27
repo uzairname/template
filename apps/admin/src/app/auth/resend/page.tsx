@@ -86,7 +86,7 @@ export default function ResendConfirmationPage() {
                 type="email"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={loading || status === 'success'}
                 required
               />
