@@ -1,6 +1,9 @@
 name: Deploy Cloudflare Worker
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -22,7 +25,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Deploy App
         run: pnpm run deploy
