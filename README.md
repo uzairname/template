@@ -2,18 +2,26 @@ This is a template
 
 # Development
 
-## Setup
+## Setup Prerequisites
 
 ### Cloudflare
 
 Get a cloudflare api token with these permissions:
 
-- Account > Workers Scripts > Edit 
+- Account > Workers Scripts > Edit
 - Account > Account Settings > Read
 
 ### Supabase
 
 Create a Supabase account. Copy the org id and a bearer token
+
+## Setup
+
+Run the "setup" workflow on github. This will create a supabase project
+
+Go to your supabase project, and set
+email confirmation required: true
+redirect urls
 
 ## Local Development
 
@@ -25,7 +33,7 @@ Run
 npx supabase init
 ```
 
-Then 
+Then
 
 ```
 npx supabase start
@@ -38,9 +46,6 @@ SUPABASE_DB_PASSWORD
 SUPABASE_SECRET_KEY
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-
-
-
 
 # Reference
 

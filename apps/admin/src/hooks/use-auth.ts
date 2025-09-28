@@ -1,36 +1,53 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
-import type { User } from "@supabase/supabase-js";
+import { createClient } from '@/utils/supabase/client'
+import type { User } from '@supabase/supabase-js'
+import { useEffect, useState } from 'react'
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = createClient()
 
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      setLoading(false);
-    };
+      // Try to get the current session first
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession()
 
-    getUser();
+      if (sessionError) {
+        console.error('Error getting session:', sessionError)
+        setUser(null)
+      }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+      if (session) {
+        console.log('Current user from session:', session.user)
+        setUser(session.user)
+      }
+      setLoading(false)
+    }
 
-    return () => subscription.unsubscribe();
-  }, []);
+    getUser()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email || 'no user')
+
+      setUser(session?.user || null)
+      setLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   const signOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-  };
+    const supabase = createClient()
+    await supabase.auth.signOut()
+  }
 
-  return { user, loading, signOut };
+  return { user, loading, signOut }
 }

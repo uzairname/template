@@ -12,11 +12,11 @@ export async function GET(request: NextRequest) {
 
   // Check if required parameters are missing
   if (!token_hash || !type) {
-    const missingParams = [];
-    if (!token_hash) missingParams.push('token_hash');
-    if (!type) missingParams.push('type');
-    
-    redirect(`/auth/error?reason=missing_params&missing=${missingParams.join(',')}`);
+    const missingParams = []
+    if (!token_hash) missingParams.push('token_hash')
+    if (!type) missingParams.push('type')
+
+    redirect(`/auth/error?reason=missing_params&missing=${missingParams.join(',')}`)
   }
 
   const supabase = await createClient()
@@ -33,11 +33,11 @@ export async function GET(request: NextRequest) {
       error_code: error.name || 'unknown',
       error_message: error.message || 'Verification failed',
       type: type,
-    });
-    
-    redirect(`/auth/error?${errorParams.toString()}`);
+    })
+
+    redirect(`/auth/error?${errorParams.toString()}`)
   }
 
   // Success - redirect user to specified redirect URL or root of app
-  redirect(next);
+  redirect(next)
 }

@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev --turbopack",
+		"dev": "next dev -p 3000 --turbopack",
 		"build": "next build",
 		"deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --env production",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"

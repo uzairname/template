@@ -19,6 +19,7 @@ These variables can be used in GitHub Actions or other CI/CD pipelines
 Required env variables to run the script:
 - SUPABASE_BEARER_TOKEN
 - SUPABASE_ORG_ID
+- BASE_URL (base url of the deployed app, e.g. https://app.example.com)
 
 Arguments:
 --name (required): The name of the Supabase project to create
@@ -79,6 +80,9 @@ async function fetchSupabase(endpoint, options) {
 async function createProject() {
   if (process.env.SUPABASE_PROJECT_ID && process.env.SUPABASE_DB_PASSWORD) {
     return { projectId: process.env.SUPABASE_PROJECT_ID, password: process.env.SUPABASE_DB_PASSWORD };
+  } else if (process.env.SUPABASE_PROJECT_ID && !process.env.SUPABASE_DB_PASSWORD) {
+    // Change the DB password and return it
+    throw new Error('SUPABASE_DB_PASSWORD is required in env when SUPABASE_PROJECT_ID is set');
   }
 
   const password = crypto.randomUUID();
@@ -94,8 +98,35 @@ async function createProject() {
   })
 
   const projectId = data.id;
+
+  await configureProject(projectId);
+
   return { projectId, password };
 }
+
+
+// See https://supabase.com/docs/guides/auth/passwords?queryGroups=flow&flow=pkce
+const CONFIRMATION_EMAIL_TEMPLATE = `<h2>Confirm your signup</h2>
+
+<p>Follow this link to confirm your user:</p>
+<p>
+  <a
+    href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}"
+    >Confirm your email</a
+  >
+</p>`
+
+async function configureProject(projectId) {
+  
+  // Update the project settings to enable email signups
+  await fetchSupabase(`/projects/${projectId}/config/auth`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      mailer_templates_confirmation_content: CONFIRMATION_EMAIL_TEMPLATE
+    }),
+  })
+}
+
 
 async function getKeys(projectId) {
 
@@ -172,7 +203,7 @@ async function main() {
     SUPABASE_PROJECT_ID: projectId,
     SUPABASE_DB_PASSWORD: password,
     SUPABASE_SECRET_KEY: secretKey,
-    NEXT_PUBLIC_SUPABASE_URL: supabaseUrl,
+    SUPABASE_URL: supabaseUrl,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
   }, null, 2));
 }

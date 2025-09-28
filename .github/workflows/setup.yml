@@ -1,4 +1,4 @@
-name: 'Provision Supabase Project'
+name: 'Setup Project'
 
 on:
   workflow_dispatch:

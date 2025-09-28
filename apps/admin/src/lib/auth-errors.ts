@@ -1,73 +1,56 @@
+import { AuthError } from '@supabase/supabase-js'
+
 // Authentication error types
 export enum AuthErrorType {
   // Login errors
   INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
-  USER_NOT_FOUND = 'USER_NOT_FOUND',
   EMAIL_NOT_CONFIRMED = 'EMAIL_NOT_CONFIRMED',
-  
+
   // Signup errors
   USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS',
-  
-  // General errors
+
+  OTHER_USER_ERROR = 'OTHER_USER_ERROR',
+
+  // Internal errors
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
-export interface AuthError {
-  type: AuthErrorType;
-  message: string;
+export interface AuthUserError {
+  type: AuthErrorType
+  message: string
 }
 
-// Helper function to create auth errors
-export const createAuthError = (
-  type: AuthErrorType, 
-  message: string, 
-): AuthError => ({
-  type,
-  message,
-});
-
-export const unknownAuthError: AuthError = createAuthError(
-  AuthErrorType.UNKNOWN_ERROR, 
-  'An unknown error occurred.'
-);
-
-// Function to parse Supabase errors into our error types
-export const parseSupabaseError = (errorMessage: string): AuthError => {
-  const msg = errorMessage.toLowerCase();
-  
-  // Login-related errors
-  if (msg.includes('invalid login credentials') || msg.includes('invalid email or password')) {
-    return createAuthError(
-      AuthErrorType.INVALID_CREDENTIALS,
-      'Invalid email or password.',
-    );
-  }
-  
-  if (msg.includes('user not found') || msg.includes('email not found')) {
-    return createAuthError(
-      AuthErrorType.USER_NOT_FOUND,
-      'No account found with this email.',
-    );
-  }
-  
-  if (msg.includes('email not confirmed') || msg.includes('confirm your email')) {
-    return createAuthError(
-      AuthErrorType.EMAIL_NOT_CONFIRMED,
-      'Please check your email and confirm your account before signing in.'
-    );
-  }
-  
-  // Signup-related errors
-  if (msg.includes('already registered') || msg.includes('already exists') || msg.includes('user already exists')) {
-    return createAuthError(
-      AuthErrorType.USER_ALREADY_EXISTS,
-      'An account with this email already exists.',
-    );
+// Function to parse Supabase errors into user error, or an internal error
+export const parseSupabaseError = (error: AuthError): AuthUserError => {
+  if (error.code === 'user_already_exists') {
+    return {
+      type: AuthErrorType.USER_ALREADY_EXISTS,
+      message: 'A user with this email already exists. Please log in instead.'
+    }
   }
 
-  // Fallback for unknown errors
-  return createAuthError(
-    AuthErrorType.UNKNOWN_ERROR,
-    errorMessage || 'An unexpected error occurred.'
-  );
-};
+  if (error.code === 'invalid_credentials') {
+    return {
+      type: AuthErrorType.INVALID_CREDENTIALS,
+      message: 'Invalid email or password. Please try again.'
+    }
+  }
+
+  if (error.code === 'email_not_confirmed') {
+    return {
+      type: AuthErrorType.EMAIL_NOT_CONFIRMED,
+      message: 'Email not confirmed.'
+    }
+  }
+
+  if (error.code === 'over_request_rate_limit' || error.code === 'over_email_send_rate_limit') {
+    return {
+      type: AuthErrorType.OTHER_USER_ERROR,
+      message: 'Too many requests. Please wait a moment and try again.'
+    }
+  }
+  return {
+    type: AuthErrorType.UNKNOWN_ERROR,
+    message: 'An unknown error occurred.'
+  }
+}

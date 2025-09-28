@@ -1,5 +1,16 @@
-"use client";
-import { Separator } from "@repo/ui/components/separator";
+'use client'
+import { LoginDialog } from '@/components/auth/login-dialog'
+import { SignupDialog } from '@/components/auth/signup-dialog'
+import { useAuth } from '@/hooks/use-auth'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@repo/ui/components/dropdown-menu'
+import { Separator } from '@repo/ui/components/separator'
 import {
   Sidebar,
   SidebarContent,
@@ -12,17 +23,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from "@repo/ui/components/sidebar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@repo/ui/components/dropdown-menu";
-import { LoginDialog } from "@/components/auth/login-dialog";
-import { SignupDialog } from "@/components/auth/signup-dialog";
-import { useAuth } from "@/hooks/use-auth";
-import { User, UserCheck } from "lucide-react";
+} from '@repo/ui/components/sidebar'
+import { LogIn, LogOut, User, UserCheck, UserPlus } from 'lucide-react'
 
 function HomeContent() {
-
-  const { isMobile } = useSidebar();
-  const { user, signOut } = useAuth();
+  const { isMobile } = useSidebar()
+  const { user, signOut } = useAuth()
 
   return (
     <>
@@ -52,10 +58,10 @@ function HomeContent() {
                       </div>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
-                          {user ? user.email : "Not signed in"}
+                          {user ? (user.user_metadata.name || "User") : 'Not signed in'}
                         </span>
                         <span className="truncate text-xs text-sidebar-foreground/70">
-                          {user ? "Account" : "Guest"}
+                          {user ? user.email : 'Guest'}
                         </span>
                       </div>
                     </div>
@@ -64,19 +70,14 @@ function HomeContent() {
 
                 <DropdownMenuContent
                   className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                  side={isMobile ? "bottom" : "right"}
+                  side={isMobile ? 'bottom' : 'right'}
                   align="end"
                   sideOffset={4}
                 >
                   {user ? (
                     <>
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem>
-                          Account
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={signOut}>
+                        <LogOut className="w-4 h-4 mr-2" />
                         Sign out
                       </DropdownMenuItem>
                     </>
@@ -84,38 +85,34 @@ function HomeContent() {
                     <DropdownMenuGroup>
                       <LoginDialog>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <LogIn className="w-4 h-4 mr-2" />
                           Sign in
                         </DropdownMenuItem>
                       </LoginDialog>
                       <SignupDialog>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <UserPlus className="w-4 h-4 mr-2" />
                           Sign up
                         </DropdownMenuItem>
                       </SignupDialog>
                     </DropdownMenuGroup>
                   )}
                 </DropdownMenuContent>
-
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
-
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
           <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
             <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mx-2 data-[orientation=vertical]:h-4"
-            />
+            <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
           </div>
         </header>
-
       </SidebarInset>
     </>
-  );
+  )
 }
 
 export default function Home() {

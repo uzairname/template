@@ -1,61 +1,55 @@
-"use client";
+'use client'
 
-import { Button } from "@repo/ui/components/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
-import { AlertCircle } from "lucide-react";
-import { cn } from "@repo/ui/lib/utils";
+import { Button } from '@repo/ui/components/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/card'
+import { cn } from '@repo/ui/lib/utils'
+import { AlertCircle } from 'lucide-react'
 
 export interface AuthErrorAction {
-  label: string;
-  action: () => void;
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  label: string
+  action: () => void
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
 }
 
 export interface AuthErrorDetails {
-  title: string;
-  description: string;
-  details?: string;
-  icon: React.ReactNode;
-  actions: AuthErrorAction[];
-  showHelpSection?: boolean;
+  title: string
+  description: string
+  details?: string
+  icon: React.ReactNode
+  actions: AuthErrorAction[]
+  showHelpSection?: boolean
 }
 
 interface AuthErrorCardProps {
-  errorDetails: AuthErrorDetails;
-  className?: string;
+  errorDetails: AuthErrorDetails
+  className?: string
 }
 
 export function AuthErrorCard({ errorDetails, className }: AuthErrorCardProps) {
   return (
-    <Card className={cn("w-full max-w-md", className)}>
+    <Card className={cn('w-full max-w-md', className)}>
       <CardHeader className="text-center">
-        <div className="flex justify-center mb-4">
-          {errorDetails.icon}
-        </div>
+        <div className="flex justify-center mb-4">{errorDetails.icon}</div>
         <CardTitle className="text-xl">{errorDetails.title}</CardTitle>
-        <CardDescription className="text-base">
-          {errorDetails.description}
-        </CardDescription>
+        <CardDescription className="text-base">{errorDetails.description}</CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
-        
         <div className="space-y-2">
           {errorDetails.actions.map((action, index) => (
             <Button
               key={index}
               onClick={action.action}
-              variant={action.variant || "default"}
+              variant={action.variant || 'default'}
               className="w-full"
             >
               {action.label}
             </Button>
           ))}
         </div>
-        
       </CardContent>
     </Card>
-  );
+  )
 }
 
 // Helper function to create auth error details
@@ -67,12 +61,12 @@ export function createAuthErrorDetails({
   onTryAgain,
   onTrySignIn,
 }: {
-  reason: string | null;
-  errorMessage?: string | null;
-  missing?: string | null;
-  onGoHome: () => void;
-  onTryAgain: () => void;
-  onTrySignIn: () => void;
+  reason: string | null
+  errorMessage?: string | null
+  missing?: string | null
+  onGoHome: () => void
+  onTryAgain: () => void
+  onTrySignIn: () => void
 }): AuthErrorDetails {
   switch (reason) {
     case 'missing_params':
@@ -88,15 +82,16 @@ export function createAuthErrorDetails({
             variant: 'outline',
           },
         ],
-      };
-      
+      }
+
     case 'verification_failed':
-      const isExpired = errorMessage?.toLowerCase().includes('expired') || 
-                       errorMessage?.toLowerCase().includes('invalid');
-      
+      const isExpired =
+        errorMessage?.toLowerCase().includes('expired') ||
+        errorMessage?.toLowerCase().includes('invalid')
+
       return {
         title: isExpired ? 'Confirmation Link Expired' : 'Verification Failed',
-        description: isExpired 
+        description: isExpired
           ? 'This confirmation link has expired or has already been used.'
           : 'We were unable to verify your account with this link.',
         details: errorMessage || 'Unknown verification error occurred.',
@@ -109,13 +104,13 @@ export function createAuthErrorDetails({
           },
         ],
         showHelpSection: true,
-      };
-      
+      }
+
     default:
       return {
         title: 'Authentication Error',
         description: 'Something went wrong during the authentication process.',
-        details: errorMessage || 'An unknown error occurred.',
+        details: errorMessage || 'error',
         icon: <AlertCircle className="h-8 w-8 text-destructive" />,
         actions: [
           {
@@ -129,6 +124,6 @@ export function createAuthErrorDetails({
             variant: 'outline',
           },
         ],
-      };
+      }
   }
 }

@@ -1,8 +1,9 @@
 {
-	"name": "@repo/backend",
+	"name": "@repo/api",
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
+    "dev": "wrangler dev --env production",
 		"deploy": "wrangler deploy --env production",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
 	},
