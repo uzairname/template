@@ -75,6 +75,7 @@ jobs:
       - name: Publish Secrets to Cloudflare Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           SUPABASE_URL: ${{ steps.terraform_outputs.outputs.supabase_url }}
           SUPABASE_ANON_KEY: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
           SUPABASE_SERVICE_KEY: ${{ steps.terraform_outputs.outputs.supabase_service_role_key }}

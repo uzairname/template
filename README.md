@@ -12,6 +12,7 @@ Get a cloudflare api token with these permissions:
 
 - Account > Workers Scripts > Edit
 - Account > Account Settings > Read
+- 
 
 ### Supabase
 
