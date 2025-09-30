@@ -1,4 +1,17 @@
 
+# Supabase Terraform Module
+#
+# Important Note: Supabase projects are immutable after creation.
+# This module uses lifecycle.ignore_changes to prevent Terraform from
+# attempting updates that would fail. If you need to modify project
+# settings like name, region, or password, you must:
+#
+# 1. Export/backup your data from the existing project
+# 2. Remove the project from Terraform state:
+#    terraform state rm module.supabase.supabase_project.main
+# 3. Apply with the new configuration to create a fresh project
+# 4. Restore your data to the new project
+
 terraform {
   required_providers {
     supabase = {
@@ -30,11 +43,27 @@ resource "random_password" "db_password" {
   special = true
 }
 
+# Supabase projects don't support updates after creation
+# If you need to change project configuration, you'll need to:
+# 1. Export your data
+# 2. Remove the project from state: terraform state rm module.supabase.supabase_project.main
+# 3. Create a new project with the desired configuration
 resource "supabase_project" "main" {
   organization_id   = var.org_id
   name              = var.project_name
   database_password = random_password.db_password.result
   region            = var.region
+
+  lifecycle {
+    # Prevent accidental updates that would fail
+    # Supabase projects are immutable after creation
+    ignore_changes = [
+      organization_id,
+      name,
+      database_password,
+      region
+    ]
+  }
 }
 
 # Configure auth settings
