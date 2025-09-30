@@ -1,19 +1,55 @@
-/**
- * tRPC server configuration
- * This file contains the tRPC router factory and context creation
- */
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { initTRPC} from '@trpc/server'
 import { type Session } from '@supabase/supabase-js'
+import { type FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
+import { createServerClient } from '@supabase/ssr'
 
-
-export async function createContext({session}: { session: Session}) {
+export async function createContext(opts: FetchCreateContextFnOptions) {
   const { env } = getCloudflareContext()
+  
+  // Parse cookies from the request
+  const cookieHeader = opts.req.headers.get('cookie') || ''
+  const cookies = parseCookies(cookieHeader)
+  
+  // Create Supabase client with cookies
+  const supabase = createServerClient(
+    env.SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    {
+      cookies: {
+        getAll() {
+          return Object.entries(cookies).map(([name, value]) => ({ name, value }))
+        },
+        setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
+          // In API context, we can't set cookies directly
+          // This is mainly for reading session
+        },
+      },
+    }
+  )
+
+  // Get the current session
+  const { data: { session } } = await supabase.auth.getSession()
 
   return {
     env,
-    session
+    session,
+    supabase
   }
+}
+
+// Helper function to parse cookies from cookie header string
+function parseCookies(cookieHeader: string): Record<string, string> {
+  const cookies: Record<string, string> = {}
+  
+  cookieHeader.split(';').forEach(cookie => {
+    const [name, ...rest] = cookie.trim().split('=')
+    if (name && rest.length > 0) {
+      cookies[name] = rest.join('=')
+    }
+  })
+  
+  return cookies
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>

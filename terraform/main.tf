@@ -1,0 +1,125 @@
+terraform {
+  required_version = ">= 1.0.0"
+  
+  cloud {
+    organization = "uz"
+    workspaces {
+      name = "template-production"
+    }
+  }
+
+  required_providers {    
+    supabase = {      
+      source  = "supabase/supabase"      
+      version = "~> 1.0"    
+    }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.0"
+    }
+  }
+}
+
+# ---- VARIABLES ----
+
+# General 
+variable "environment" {
+  description = "Deployment environment (e.g., dev, staging, prod)"
+  type        = string
+  default     = "production"
+}
+
+variable "project_name" {
+  description = "Client/project identifier"
+  type        = string
+}
+
+# Supabase
+variable "supabase_bearer_token" {
+  description = "Supabase Management API Token"
+  type        = string
+  sensitive   = true
+}
+
+variable "supabase_org_id" {
+  description = "Supabase Organization ID"
+  type        = string
+  sensitive   = true
+}
+
+variable "supabase_region" {
+  description = "Supabase project region"
+  type        = string
+  default     = "us-east-1"
+}
+
+
+# Cloudflare
+variable "cloudflare_api_token" {
+  description = "Cloudflare API Token"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_account_id" {
+  description = "Cloudflare Account ID"
+  type        = string
+}
+
+
+# ---- PROVIDERS ----
+
+provider "supabase" {
+  access_token = var.supabase_bearer_token
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
+}
+
+# ---- MODULES ----
+
+# Supabase
+module "supabase" {
+  source = "./modules/supabase"
+
+  project_name = "${var.project_name}-${var.environment}"
+  org_id       = var.supabase_org_id
+  region       = var.supabase_region
+}
+
+# Cloudflare
+module "cloudflare" {
+  source = "./modules/cloudflare"
+
+  account_id = var.cloudflare_account_id
+  cloudflare_api_token = var.cloudflare_api_token
+  worker_name  = "${var.project_name}-api-${var.environment}"
+
+  supabase_url              = module.supabase.url
+  supabase_anon_key         = module.supabase.anon_key
+  supabase_service_role_key = module.supabase.service_role_key
+  supabase_db_password      = module.supabase.db_password
+  supabase_project_id       = module.supabase.project_id
+}
+
+# ---- OUTPUTS ----
+
+output "supabase_url" {
+  value = module.supabase.url
+}
+
+output "supabase_anon_key" {
+  value     = module.supabase.anon_key
+  sensitive = true
+}
+
+output "supabase_service_role_key" {
+  value     = module.supabase.service_role_key
+  sensitive = true
+}
+
+output "supabase_db_password" {
+  value     = module.supabase.db_password
+  sensitive = true
+}

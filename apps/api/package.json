@@ -8,6 +8,9 @@
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
 	},
   "dependencies": {
+    "hono": "^4.6.13",
+    "@trpc/server": "^11.0.0",
+    "@repo/api": "workspace:*"
   },
   "devDependencies": {
 		"typescript": "^5",

@@ -1,8 +1,10 @@
 This is a template
 
-# Development
+# Setup
 
-## Setup Prerequisites
+These instructions are for MacOS
+
+## One Time
 
 ### Cloudflare
 
@@ -15,19 +17,54 @@ Get a cloudflare api token with these permissions:
 
 Create a Supabase account. Copy the org id and a bearer token
 
-## Setup
+### Terraform
 
-Run the "setup" workflow on github. This will create a supabase project
+Install terraform and log in.
 
-Go to your supabase project, and set
-email confirmation required: true
-redirect urls
+```sh
+brew tap hashicorp/tap 
+```
+```sh
+brew install hashicorp/tap/terraform
+```
+
+```
+terraform login
+```
+
+Create a .env based on .env.example and save it somewhere (It can be reused across projects)
+
+## Once per project:
+
+Clone the repo, copy paste your .env into the root
+
+```sh
+chmod +x ./terraform/setup.sh
+```
+
+```sh
+source .env && ./terraform/setup.sh <args>
+```
+
+```sh
+terraform init
+```
+```sh
+terraform plan
+```
+```sh
+terraform apply
+```
+
+Once terraform is set up, push the code to github and run the "deploy" workflow (wip)
+
+
+
+# Development
 
 ## Local Development
 
-### Supabase
-
-Run
+### Supabase (Optional; only for local development)
 
 ```
 npx supabase init

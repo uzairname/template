@@ -6,6 +6,30 @@
 **/copilot-intructions.md
 .venv
 
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform/
+.terraform.lock.hcl
+terraform.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform Cloud
+.terraformrc
+terraform.rc
+
+# Client-specific configurations (if they contain sensitive data)
+**/*.tfvars
+!**/*.tfvars.example
+
+
 # dependencies
 node_modules
 /.pnp

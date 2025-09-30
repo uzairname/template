@@ -4,66 +4,103 @@ on:
   workflow_dispatch:
     inputs:
       project_name:
-        description: 'The name for the new Supabase project.'
+        description: 'The name for the project.'
         required: true
         default: 'project'
-      region:
-        description: 'The region for the Supabase project.'
+      environment:
+        description: 'The environment to set up (e.g., dev, staging, prod).'
         required: true
-        default: 'us-east-1'
+        default: 'production'
+
 
 jobs:
-  supabase:
+  deploy:
     runs-on: ubuntu-latest
-    
-    # Grant permission to write secrets to the repository
     permissions:
-      actions: write
       contents: read
-
-    # Pass Supabase credentials to all steps in this job
-    env:
-      SUPABASE_BEARER_TOKEN: ${{ secrets.SUPABASE_BEARER_TOKEN }}
-      SUPABASE_ORG_ID: ${{ secrets.SUPABASE_ORG_ID }}
-      # Pass existing secrets to the script. They will be empty strings if not set.
-      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
-
+    
     steps:
       - name: 'Checkout Code'
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      #  1. PROVISION INFRASTRUCTURE WITH TERRAFORM
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
         with:
-          node-version: 20
+          terraform_version: "1.5.0" # Specify your desired version
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+        env:
+          # Pass Terraform Cloud token if you're using it
+          TF_API_TOKEN: "${{ secrets.TFC_TOKEN }}"
+
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
+        env:
+          # These TF_VAR_ variables map to the 'variable' blocks in your Terraform code
+          TF_VAR_project_name: ${{ github.event.inputs.project_name }}
+          TF_VAR_environment: ${{ github.event.inputs.environment }}
+          TF_VAR_supabase_bearer_token: "${{ secrets.SUPABASE_BEARER_TOKEN }}"
+          TF_VAR_supabase_org_id: "${{ secrets.SUPABASE_ORG_ID }}"
+          TF_VAR_cloudflare_api_token: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          TF_VAR_cloudflare_account_id: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          TF_API_TOKEN: "${{ secrets.TFC_TOKEN }}"
+
+      #  2. EXTRACT TERRAFORM OUTPUTS
+      
+      - name: Get Terraform Outputs
+        id: terraform_outputs
+        working-directory: ./terraform
+        run: |
+          # The -json flag is crucial for parsing
+          # 'set-output' is deprecated, so we use a different method to expose the outputs
+          echo "outputs=$(terraform output -json)" >> $GITHUB_OUTPUT
+
+      #  3. UPLOAD SECRETS TO CLOUDFLARE
+
+      - name: Setup Node.js and pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
           cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: 'Create Supabase Project'
-        id: provision_supabase
-        run: |
-          {
-            echo 'json_output<<EOF'
-            node supabase.js --name "${{ github.event.inputs.project_name }}" --region "${{ github.event.inputs.region }}"
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
-
-      - name: 'Update Secrets'
+      - name: Publish Secrets to Cloudflare Worker
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
-          JSON_OUTPUT: ${{ steps.provision_supabase.outputs.json_output }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SUPABASE_URL: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_url.value }}
+          SUPABASE_ANON_KEY: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_anon_key.value }}
+          SUPABASE_SERVICE_KEY: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_service_role_key.value }}
+          SUPABASE_DB_PASSWORD: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_db_password.value }}
         run: |
-          set -e -o pipefail
-          echo "$JSON_OUTPUT" | jq -r 'to_entries| .[] | .key + " " + .value' | \
-          while read key value; do
-            echo "Setting secret: $key"
-            gh secret set "$key" -b"$value"
-          done
+          WORKER_NAME="${{ github.event.inputs.project_name }}-api-${{ github.event.inputs.environment }}"
+          echo "Uploading secrets to worker: $WORKER_NAME"
+          
+          echo "$SUPABASE_URL" | npx wrangler secret put SUPABASE_URL --name $WORKER_NAME
+          echo "$SUPABASE_ANON_KEY" | npx wrangler secret put NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY --name $WORKER_NAME
+          echo "$SUPABASE_SERVICE_KEY" | npx wrangler secret put SUPABASE_SECRET_KEY --name $WORKER_NAME
+          echo "$SUPABASE_DB_PASSWORD" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
+          echo "$SUPABASE_PROJECT_ID" | npx wrangler secret put SUPABASE_PROJECT_ID --name $WORKER_NAME
+          echo "Secrets uploaded successfully."
+
+      #  4. DEPLOY APPLICATION CODE
+
+      - name: Deploy App to Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # The opennextjs build process needs these public variables at build time
+          NEXT_PUBLIC_SUPABASE_URL: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_url.value }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_anon_key.value }}
+        run: |
+          cd apps/api
+          pnpm run deploy

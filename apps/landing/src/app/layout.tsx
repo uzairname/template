@@ -2,8 +2,8 @@ import '@repo/ui/globals.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard',
-  description: 'A simple admin dashboard',
+  title: 'Landing Page',
+  description: 'A simple landing page',
 }
 
 export default function RootLayout({

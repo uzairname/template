@@ -40,10 +40,6 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Note: Removed automatic redirect to login page
-  // Users can now access all pages regardless of authentication status
-  // Individual pages can handle authentication checks as needed
-
   return supabaseResponse
 }
 
