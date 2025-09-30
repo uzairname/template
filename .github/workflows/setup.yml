@@ -26,20 +26,16 @@ jobs:
       #  1. PROVISION INFRASTRUCTURE WITH TERRAFORM
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: "1.5.0" # Specify your desired version
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        working-directory: ./terraform
         run: terraform init
+        working-directory: ./terraform
         env:
-          # Pass Terraform Cloud token if you're using it
           TF_API_TOKEN: "${{ secrets.TFC_TOKEN }}"
 
       - name: Terraform Apply
         working-directory: ./terraform
-        run: terraform apply -auto-approve
         env:
           # These TF_VAR_ variables map to the 'variable' blocks in your Terraform code
           TF_VAR_project_name: ${{ github.event.inputs.project_name }}
@@ -49,6 +45,7 @@ jobs:
           TF_VAR_cloudflare_api_token: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
           TF_VAR_cloudflare_account_id: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
           TF_API_TOKEN: "${{ secrets.TFC_TOKEN }}"
+        run: terraform apply -auto-approve
 
       #  2. EXTRACT TERRAFORM OUTPUTS
       
@@ -56,16 +53,13 @@ jobs:
         id: terraform_outputs
         working-directory: ./terraform
         run: |
-          # The -json flag is crucial for parsing
-          # 'set-output' is deprecated, so we use a different method to expose the outputs
-          echo "outputs=$(terraform output -json)" >> $GITHUB_OUTPUT
+          # FIX 2: More robust way to capture JSON output
+          echo "outputs<<EOF" >> $GITHUB_OUTPUT
+          echo "$(terraform output -json)" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        
+      - uses: pnpm/action-setup@v4
 
-      #  3. UPLOAD SECRETS TO CLOUDFLARE
-
-      - name: Setup Node.js and pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -89,16 +83,11 @@ jobs:
           echo "$SUPABASE_ANON_KEY" | npx wrangler secret put NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY --name $WORKER_NAME
           echo "$SUPABASE_SERVICE_KEY" | npx wrangler secret put SUPABASE_SECRET_KEY --name $WORKER_NAME
           echo "$SUPABASE_DB_PASSWORD" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
-          echo "$SUPABASE_PROJECT_ID" | npx wrangler secret put SUPABASE_PROJECT_ID --name $WORKER_NAME
-          echo "Secrets uploaded successfully."
-
-      #  4. DEPLOY APPLICATION CODE
 
       - name: Deploy App to Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # The opennextjs build process needs these public variables at build time
           NEXT_PUBLIC_SUPABASE_URL: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_url.value }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_anon_key.value }}
         run: |
