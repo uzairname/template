@@ -56,10 +56,11 @@ jobs:
         id: terraform_outputs
         working-directory: ./terraform
         run: |
-          # FIX 2: More robust way to capture JSON output
-          echo "outputs<<EOF" >> $GITHUB_OUTPUT
-          echo "$(terraform output -json)" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          # Capture individual outputs as separate environment variables
+          echo "supabase_url=$(terraform output -raw supabase_url)" >> $GITHUB_OUTPUT
+          echo "supabase_anon_key=$(terraform output -raw supabase_anon_key)" >> $GITHUB_OUTPUT
+          echo "supabase_service_role_key=$(terraform output -raw supabase_service_role_key)" >> $GITHUB_OUTPUT
+          echo "supabase_db_password=$(terraform output -raw supabase_db_password)" >> $GITHUB_OUTPUT
         
       - uses: pnpm/action-setup@v4
 
@@ -74,10 +75,10 @@ jobs:
       - name: Publish Secrets to Cloudflare Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          SUPABASE_URL: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_url.value }}
-          SUPABASE_ANON_KEY: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_anon_key.value }}
-          SUPABASE_SERVICE_KEY: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_service_role_key.value }}
-          SUPABASE_DB_PASSWORD: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_db_password.value }}
+          SUPABASE_URL: ${{ steps.terraform_outputs.outputs.supabase_url }}
+          SUPABASE_ANON_KEY: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
+          SUPABASE_SERVICE_KEY: ${{ steps.terraform_outputs.outputs.supabase_service_role_key }}
+          SUPABASE_DB_PASSWORD: ${{ steps.terraform_outputs.outputs.supabase_db_password }}
         run: |
           WORKER_NAME="${{ github.event.inputs.project_name }}-api-${{ github.event.inputs.environment }}"
           echo "Uploading secrets to worker: $WORKER_NAME"
@@ -91,8 +92,8 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_url.value }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ fromJSON(steps.terraform_outputs.outputs).supabase_anon_key.value }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ steps.terraform_outputs.outputs.supabase_url }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
         run: |
           cd apps/api
           pnpm run deploy
