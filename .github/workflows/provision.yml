@@ -58,17 +58,21 @@ jobs:
           echo "supabase_db_password=$(terraform output -raw supabase_db_password)" >> $GITHUB_OUTPUT
           echo "postgres_uri=$(terraform output -raw postgres_uri)" >> $GITHUB_OUTPUT
 
-      - name: Update Repository Variables
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SUPABASE_PUBLIC_URL: ${{ steps.terraform_outputs.outputs.supabase_public_url }}
-          SUPABASE_ANON_KEY: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
-        run: |
-          # Update repository variables with the new values
-          gh variable set SUPABASE_PUBLIC_URL --body "$SUPABASE_PUBLIC_URL"
-          gh variable set SUPABASE_ANON_KEY --body "$SUPABASE_ANON_KEY"
-          echo "Repository variables updated successfully"
-     
+      - name: Update Repository Variable
+        uses: mmoyaferrer/set-github-variable@v1.0.0
+        with:
+          name: 'SUPABASE_PUBLIC_URL'
+          value: ${{ steps.terraform_outputs.outputs.supabase_public_url }}
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GH_PAT_FOR_SECRETS }}
+
+      - name: Update Repository Variable 
+        uses: mmoyaferrer/set-github-variable@v1.0.0
+        with:
+          name: 'SUPABASE_ANON_KEY'
+          value: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GH_PAT_FOR_SECRETS }}
 
   cloudflare-secrets:
     strategy:
