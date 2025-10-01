@@ -1,4 +1,4 @@
-name: 'Setup Project'
+name: 'Provision Resources'
 
 on:
   workflow_dispatch:

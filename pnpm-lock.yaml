@@ -246,6 +246,9 @@ importers:
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.5(postgres@3.4.7)
+      postgres:
+        specifier: ^3.4.7
+        version: 3.4.7
     devDependencies:
       drizzle-kit:
         specifier: ^0.31.5
@@ -9162,8 +9165,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  postgres@3.4.7:
-    optional: true
+  postgres@3.4.7: {}
 
   prelude-ls@1.2.1: {}
 
