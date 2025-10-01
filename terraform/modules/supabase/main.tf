@@ -76,9 +76,8 @@ resource "supabase_project" "main" {
 resource "supabase_settings" "auth" {
   project_ref = supabase_project.main.id
 
-  site_url = var.base_url
-  
   auth = jsonencode({
+    site_url = var.base_url
     mailer_templates_confirmation_content = <<-EOT
       <h2>Confirm your signup</h2>
       <p>Follow this link to confirm your user:</p>
