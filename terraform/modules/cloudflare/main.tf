@@ -8,8 +8,8 @@ terraform {
   }
 }
 
-variable "worker_name" {
-  description = "The name for the Cloudflare Worker."
+variable "project_name" {
+  description = "The name to prefix the names of the Cloudflare Workers with."
   type        = string
 }
 
@@ -25,7 +25,17 @@ variable "cloudflare_api_token" {
 }
 
 # The Cloudflare Worker script resource
-resource "cloudflare_worker" "worker" {
+resource "cloudflare_worker" "worker-backend" {
   account_id = var.account_id
-  name = var.worker_name
+  name = "${var.project_name}-backend"
+}
+
+resource "cloudflare_worker" "worker-landing" {
+  account_id = var.account_id
+  name = "${var.project_name}-landing"
+}
+
+resource "cloudflare_worker" "worker-admin" {
+  account_id = var.account_id
+  name = "${var.project_name}-admin"
 }

@@ -92,7 +92,7 @@ output "project_id" {
   value = supabase_project.main.id
 }
 
-output "url" {
+output "public_url" {
   value = "https://${supabase_project.main.id}.supabase.co"
 }
 
@@ -111,4 +111,10 @@ output "service_role_key" {
   value     = data.supabase_apikeys.main.service_role_key
   sensitive = true
   description = "Service role key for server-side use"
+}
+
+output "postgres_uri" {
+  value     = "postgresql://postgres.${supabase_project.main.id}:${random_password.db_password.result}@aws-0-${var.region}.pooler.supabase.com:6543/postgres"
+  sensitive = true
+  description = "PostgreSQL connection URL for direct database access"
 }

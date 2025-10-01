@@ -1,0 +1,8 @@
+// Typescript config for Cloudflare Workers apps in this repo
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    // Cloudflare Env types. Path is relative to directories within apps/
+    "types": ["../../packages/api/src/cloudflare-env.d.ts"] 
+  }
+}

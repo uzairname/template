@@ -1,8 +1,8 @@
 
 import { Hono } from 'hono'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
-import { appRouter, type AppRouter } from './router'
-import { createContext } from './trpc'
+import { appRouter, type AppRouter } from '../../../packages/api/src/router'
+import { createContext } from '@repo/api'
 
 const app = new Hono<{ Bindings: CloudflareEnv }>()
 

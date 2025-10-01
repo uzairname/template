@@ -22,13 +22,6 @@ terraform {
 
 # ---- VARIABLES ----
 
-# General 
-variable "environment" {
-  description = "Deployment environment (e.g., dev, staging, prod)"
-  type        = string
-  default     = "production"
-}
-
 variable "project_name" {
   description = "Client/project identifier"
   type        = string
@@ -83,7 +76,7 @@ provider "cloudflare" {
 module "supabase" {
   source = "./modules/supabase"
 
-  project_name = "${var.project_name}-${var.environment}"
+  project_name = "${var.project_name}"
   org_id       = var.supabase_org_id
   region       = var.supabase_region
 }
@@ -94,13 +87,13 @@ module "cloudflare" {
 
   account_id = var.cloudflare_account_id
   cloudflare_api_token = var.cloudflare_api_token
-  worker_name  = "${var.project_name}-api"
+  project_name  = "${var.project_name}"
 }
 
 # ---- OUTPUTS ----
 
-output "supabase_url" {
-  value = module.supabase.url
+output "supabase_public_url" {
+  value = module.supabase.public_url
 }
 
 output "supabase_anon_key" {
@@ -115,5 +108,10 @@ output "supabase_service_role_key" {
 
 output "supabase_db_password" {
   value     = module.supabase.db_password
+  sensitive = true
+}
+
+output "postgres_uri" {
+  value     = module.supabase.postgres_uri
   sensitive = true
 }
