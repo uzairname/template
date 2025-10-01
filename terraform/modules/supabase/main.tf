@@ -114,7 +114,7 @@ output "service_role_key" {
 }
 
 output "postgres_uri" {
-  value     = "postgresql://postgres.${supabase_project.main.id}:${random_password.db_password.result}@aws-0-${var.region}.pooler.supabase.com:6543/postgres"
+  value     = "postgresql://postgres.${supabase_project.main.id}:${random_password.db_password.result}@aws-1-${var.region}.pooler.supabase.com:6543/postgres"
   sensitive = true
   description = "PostgreSQL connection URL for direct database access"
 }
