@@ -17,7 +17,7 @@ export async function createContext(opts: FetchCreateContextFnOptions & { env: C
     // Create Supabase client with cookies
   const supabase = createServerClient(
     opts.env.SUPABASE_PUBLIC_URL,
-    opts.env.SUPABASE_ANON_KEY,
+    opts.env.SUPABASE_SERVICE_ROLE_KEY,
     {
       cookies: {
         getAll() {
