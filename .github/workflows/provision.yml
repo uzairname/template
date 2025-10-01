@@ -40,7 +40,7 @@ jobs:
       - name: Terraform Apply
         working-directory: ./terraform
         env:
-          # These TF_VAR_ variables map to the 'variable' blocks in your Terraform code
+          # These TF_VAR_ variables map to the 'variable' blocks in Terraform scripts
           TF_VAR_project_name: "${{ env.PROJECT_NAME }}"
           TF_VAR_supabase_bearer_token: "${{ secrets.SUPABASE_BEARER_TOKEN }}"
           TF_VAR_supabase_org_id: "${{ secrets.SUPABASE_ORG_ID }}"
@@ -66,10 +66,16 @@ jobs:
           gh variable set SUPABASE_PUBLIC_URL --body "${{ steps.terraform_outputs.outputs.supabase_public_url }}"
           gh variable set SUPABASE_ANON_KEY --body "${{ steps.terraform_outputs.outputs.supabase_anon_key }}"
 
+      - name: Update Repository Secrets
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
+        run: |
+          gh secret set POSTGRES_URI --body "${{ steps.terraform_outputs.outputs.postgres_uri }}"
+
   cloudflare-secrets:
     strategy:
       matrix:
-        app: ["api", "landing", "admin"]
+        app: ["backend", "landing", "admin"]
     runs-on: ubuntu-latest
     needs: terraform
     env:

@@ -15,7 +15,7 @@
   "env": {
     "production": {
       // "route": { "pattern": "api.example.com", "custom_domain": true },
-      "name": "template-api" // This must match the worker name in terraform/main.tf
+      "name": "template-backend" // This must match the worker name in terraform/main.tf
     }
   }
 }

@@ -9,11 +9,11 @@
   },
   "scripts": {
     "generate": "drizzle-kit generate",
-    "migrate": "tsx src/migrate.ts",
-    "migrate:prod": "tsx src/migrate.ts --env production"
+    "migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
-    "drizzle-orm": "^0.44.5"
+    "drizzle-orm": "^0.44.5",
+    "@repo/utils": "workspace:*"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.5",

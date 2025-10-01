@@ -27,9 +27,11 @@ Create a .env based on .env.example and save it somewhere (It can be reused acro
 
 Clone the repo.
 
-### Set Names
+### (Optional) Set Names
 
-1. Envure that the **project name** is consistent across:
+If you want to change the name to something other than `template`, do the following:
+
+1. Envure that the project name is consistent across:
 
 - `terraform/main.tf`
 
@@ -55,10 +57,21 @@ env:
 The convention is for the worker name to follow the format "project_name-app_name", where app_name is something like api, admin, etc
 
 
-### Provision Resources
+### (Optional) Set Apps
 
-Once terraform is set up, push the code to github and run the "provision" workflow
+If you add or modify cloudflare worker apps inside an `apps` directory, such as `apps/your-app`, update the relevant package.jsons, and then ensure that their names are consistent across:
 
+- `apps/your-app/wrangler.jsonc`
+- The matrix in `.github/workflows/deploy.yml` and `.github/workflows/provision.yml`
+- `terraform/cloudflare/main.tf`
+
+### (Optional) Set Domains
+
+
+
+### Run Github Action
+
+Once terraform is set up, push the code to github and run the "provision" and "deploy" workflow
 
 # Development
 
@@ -88,8 +101,14 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
 ### Migrations
 
+To deploy changes to `packages/db/src/schema`, run
 
+```bash
+# Working dir: packages/db
+npx drizzle-kit generate
+```
 
+The next time the app is deployed, migrations will be applied
 
 # Reference
 
