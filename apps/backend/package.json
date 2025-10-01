@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
-    "dev": "wrangler dev --env production",
+    "dev": "wrangler dev --env development",
 		"deploy": "wrangler deploy --env production",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv ../../packages/api/src/cloudflare-env.d.ts"
 	},

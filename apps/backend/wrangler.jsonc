@@ -13,6 +13,14 @@
     "enabled": true
   },
   "env": {
+    "development": {
+      "name": "template-backend-dev",
+      "vars": {
+        "ADMIN_BASE_URL": "http://localhost:3000",
+        "LANDING_BASE_URL": "http://localhost:3001",
+        "BACKEND_BASE_URL": "http://localhost:8989"
+      }
+    },
     "production": {
       // "route": { "pattern": "api.example.com", "custom_domain": true },
       "name": "template-backend", // This must match the worker name in terraform/main.tf

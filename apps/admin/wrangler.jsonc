@@ -15,9 +15,17 @@
     "enabled": true
   },
   "env": {
+    "development": {
+      "name": "template-admin-dev",
+      "vars": {
+        "ADMIN_BASE_URL": "http://localhost:3000",
+        "LANDING_BASE_URL": "http://localhost:3001",
+        "BACKEND_BASE_URL": "http://localhost:8989"
+      }
+    },
     "production": {
-      // "route": { "pattern": "admin.example.com", "custom_domain": true },
       "name": "template-admin",
+      // "route": { "pattern": "admin.example.com", "custom_domain": true },
       "vars": {
         "ADMIN_BASE_URL": "https://template-admin.5r.workers.dev",
         "LANDING_BASE_URL": "https://template-landing.5r.workers.dev",

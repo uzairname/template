@@ -14,7 +14,7 @@ export async function createContext(opts: FetchCreateContextFnOptions & { env: C
   const cookieHeader = opts.req.headers.get('cookie') || ''
   const cookies = parseCookies(cookieHeader)
   
-    // Create Supabase client with cookies
+  // Create Supabase client with cookies
   const supabase = createServerClient(
     opts.env.SUPABASE_PUBLIC_URL,
     opts.env.SUPABASE_SERVICE_ROLE_KEY,
