@@ -40,7 +40,7 @@ variable "region" {
 
 resource "random_password" "db_password" {
   length  = 32
-  special = true
+  special = false  # Disable special characters to ensure URL safety
 }
 
 # Supabase projects don't support updates after creation
