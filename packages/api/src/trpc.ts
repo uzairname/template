@@ -10,39 +10,34 @@ import { UserRole } from '@repo/db'
 
 export async function createContext(opts: FetchCreateContextFnOptions & { env: CloudflareEnv }) {
   
-  // Parse cookies from the request
-  const cookieHeader = opts.req.headers.get('cookie') || ''
-  const cookies = parseCookies(cookieHeader)
-  
-  // Create Supabase client with cookies
-  const supabase = createServerClient(
-    opts.env.SUPABASE_PUBLIC_URL,
-    opts.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      cookies: {
-        getAll() {
-          return Object.entries(cookies).map(([name, value]) => ({ name, value }))
-        },
-        setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
-          // In API context, we can't set cookies directly
-          // This is mainly for reading session
-        },
-      },
-    }
-  )
-
-  // Get the current session
-  const { data: { session } } = await supabase.auth.getSession()
-
   // Create database connection using Supabase credentials
   const db = createClient(opts.env.POSTGRES_URI)
 
   return {
     env: opts.env,
-    session,
-    supabase,
     db,
-    req: opts.req
+    req: opts.req,
+    // Lazy Supabase client creation - only created when needed
+    createSupabaseClient: () => {
+      const cookieHeader = opts.req.headers.get('cookie') || ''
+      const cookies = parseCookies(cookieHeader)
+      
+      return createServerClient(
+        opts.env.SUPABASE_PUBLIC_URL,
+        opts.env.SUPABASE_SERVICE_ROLE_KEY,
+        {
+          cookies: {
+            getAll() {
+              return Object.entries(cookies).map(([name, value]) => ({ name, value }))
+            },
+            setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
+              // In API context, we can't set cookies directly
+              // This is mainly for reading session
+            },
+          },
+        }
+      )
+    }
   }
 }
 
@@ -69,7 +64,11 @@ export const publicProcedure = t.procedure
 
 // Authentication middleware
 const isAuthenticated = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.session) {
+  // Create Supabase client only when authentication is needed
+  const supabase = ctx.createSupabaseClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  if (!session) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'You must be logged in to access this resource',
@@ -79,14 +78,20 @@ const isAuthenticated = t.middleware(async ({ ctx, next }) => {
   return next({
     ctx: {
       ...ctx,
-      user: ctx.session.user,
+      session,
+      supabase,
+      user: session.user,
     },
   })
 })
 
 // Admin middleware
 const isAdmin = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.session) {
+  // Create Supabase client only when authentication is needed
+  const supabase = ctx.createSupabaseClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  if (!session) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'You must be logged in to access this resource',
@@ -97,7 +102,7 @@ const isAdmin = t.middleware(async ({ ctx, next }) => {
   const [userRecord] = await ctx.db
     .select()
     .from(users)
-    .where(eq(users.id, ctx.session.user.id))
+    .where(eq(users.id, session.user.id))
     .limit(1)
 
   if (!userRecord || userRecord.role !== UserRole.Admin) {
@@ -110,7 +115,9 @@ const isAdmin = t.middleware(async ({ ctx, next }) => {
   return next({
     ctx: {
       ...ctx,
-      user: ctx.session.user,
+      session,
+      supabase,
+      user: session.user,
       userRecord,
     },
   })
