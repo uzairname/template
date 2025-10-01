@@ -68,7 +68,6 @@ If you add or modify cloudflare worker apps inside an `apps` directory, such as 
 ### (Optional) Set Domains
 
 
-
 ### Run Github Action
 
 Once terraform is set up, push the code to github and run the "provision" and "deploy" workflow
@@ -98,7 +97,6 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
 
-
 ### Migrations
 
 To deploy changes to `packages/db/src/schema`, run
@@ -118,3 +116,8 @@ https://ui.shadcn.com/docs/monorepo
 # Project setup
 
 `packages/api`: API package with tRPC router and context, to be served by @repo/backend
+
+
+# Managing Infra
+
+Supabase projects are immutable after creation. You cannot change the database password after creation. To do so, manually reset the password in the supabase dashboard, then update 
