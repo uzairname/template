@@ -74,7 +74,6 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
     const supabase = createClient()
 
-    const baseUrl = nonNullable(process.env.NEXT_PUBLIC_ADMIN_BASE_URL, 'NEXT_PUBLIC_ADMIN_BASE_URL')
     const { error } = await supabase.auth.resend({
       email: formData.email,
       type: 'signup',

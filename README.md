@@ -88,13 +88,7 @@ Then
 npx supabase start
 ```
 
-Copy the following variables into apps/admin/.dev.vars
-
-SUPABASE_PROJECT_ID
-SUPABASE_DB_PASSWORD
-SUPABASE_SECRET_KEY
-NEXT_PUBLIC_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+Copy the env variables into .dev.vars
 
 
 ### Migrations
@@ -107,6 +101,14 @@ npx drizzle-kit generate
 ```
 
 The next time the app is deployed, migrations will be applied
+
+### Deployment
+
+To quickly deploy, run
+
+```
+pnpm deploy --filter @repo/admin
+```
 
 # Reference
 

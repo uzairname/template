@@ -9,9 +9,17 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
+  const [url, key] = [env.SUPABASE_PUBLIC_URL, env.SUPABASE_SERVICE_ROLE_KEY]
+  if (!url || !key) {
+    throw new Error(
+      'Missing SUPABASE_PUBLIC_URL or SUPABASE_SERVICE_ROLE_KEY environment variables' + 
+      ` (url: ${url}, key: ${key})`
+    )
+  }
+
   const supabase = createServerClient(
-    env.SUPABASE_PUBLIC_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY,
+    url,
+    key,
     {
       cookies: {
         getAll() {
