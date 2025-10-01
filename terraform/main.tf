@@ -59,6 +59,12 @@ variable "cloudflare_account_id" {
   type        = string
 }
 
+variable "base_url" {
+  description = "The base URL of your website for auth redirects and email links"
+  type        = string
+  default     = "http://localhost:3000"
+}
+
 
 # ---- PROVIDERS ----
 
@@ -79,6 +85,7 @@ module "supabase" {
   project_name = "${var.project_name}"
   org_id       = var.supabase_org_id
   region       = var.supabase_region
+  base_url     = var.base_url
 }
 
 # Cloudflare

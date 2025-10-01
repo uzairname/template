@@ -38,6 +38,12 @@ variable "region" {
   default = "us-east-1"
 }
 
+variable "base_url" {
+  type        = string
+  description = "The base URL of your website for auth redirects and email links"
+  default     = "http://localhost:3000"
+}
+
 resource "random_password" "db_password" {
   length  = 32
   special = false  # Disable special characters to ensure URL safety
@@ -70,6 +76,8 @@ resource "supabase_project" "main" {
 resource "supabase_settings" "auth" {
   project_ref = supabase_project.main.id
 
+  site_url = var.base_url
+  
   auth = jsonencode({
     mailer_templates_confirmation_content = <<-EOT
       <h2>Confirm your signup</h2>

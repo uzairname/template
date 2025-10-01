@@ -50,7 +50,7 @@ env:
 
 
 2. Ensure that the **worker names** are consistent across:
-- `apps/**/wrangler.jsonc`
+- The relevant `apps/**/wrangler.jsonc` files
 - `terraform/cloudflare/main.tf`
 - The *cloudflare-secrets* step of `.github/workflows/provision.yml`
 
@@ -66,6 +66,14 @@ If you add or modify cloudflare worker apps inside an `apps` directory, such as 
 - `terraform/cloudflare/main.tf`
 
 ### (Optional) Set Domains
+
+To configure your production domain, update the domain names and base URLs in:
+
+1. `.github/workflows/provision.yml`
+
+2. The relevant `apps/**/wrangler.jsonc` files
+
+3. Routes in terraform files
 
 
 ### Run Github Action

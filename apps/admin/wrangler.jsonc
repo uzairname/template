@@ -17,7 +17,12 @@
   "env": {
     "production": {
       // "route": { "pattern": "admin.example.com", "custom_domain": true },
-      "name": "template-admin"
+      "name": "template-admin",
+      "vars": {
+        "ADMIN_BASE_URL": "https://template-admin.5r.workers.dev",
+        "LANDING_BASE_URL": "https://template-landing.5r.workers.dev",
+        "BACKEND_BASE_URL": "https://template-backend.5r.workers.dev"
+      }
     }
   }
 }

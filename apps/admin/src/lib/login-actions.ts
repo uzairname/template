@@ -2,6 +2,7 @@
 
 import { AuthErrorType, AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
 import { createClient } from '@/utils/supabase/server'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { nonNullable } from '@repo/utils'
 import { Result, err, ok } from '@repo/utils/result'
 
@@ -32,6 +33,10 @@ export async function signup(
 ): Promise<Result<{ needsConfirmEmail?: boolean } | void, AuthUserError>> {
   const supabase = await createClient()
 
+  const { env } = getCloudflareContext()
+
+  const baseUrl = env.ADMIN_BASE_URL
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -40,6 +45,7 @@ export async function signup(
           data: {
             name: name,
           },
+          emailRedirectTo: `${baseUrl}`,
         }
       : undefined,
   })

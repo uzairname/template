@@ -6,6 +6,9 @@ on:
 
 env:
   PROJECT_NAME: template
+  ADMIN_BASE_URL: https://template-admin.5r.workers.dev
+  LANDING_BASE_URL: https://template.5r.workers.dev
+  BACKEND_BASE_URL: https://template-backend.5r.workers.dev
 
 jobs:
   terraform:
@@ -94,3 +97,4 @@ jobs:
           echo "${{ needs.terraform.outputs.supabase_db_password }}" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
           echo "${{ needs.terraform.outputs.postgres_uri }}" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
           echo "${{ secrets.APP_KEY }}" | npx wrangler secret put APP_KEY --name $WORKER_NAME
+
