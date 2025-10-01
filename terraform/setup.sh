@@ -108,4 +108,3 @@ create_variable "supabase_bearer_token" "$SUPABASE_BEARER_TOKEN" true
 create_variable "supabase_org_id" "$SUPABASE_ORG_ID" true
 
 echo "✅ Variables configured"
-

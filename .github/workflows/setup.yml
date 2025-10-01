@@ -2,16 +2,10 @@ name: 'Setup Project'
 
 on:
   workflow_dispatch:
-    inputs:
-      project_name:
-        description: 'The name for the project.'
-        required: true
-        default: 'project'
-      environment:
-        description: 'The environment to set up (e.g., dev, staging, prod).'
-        required: true
-        default: 'production'
 
+
+env:
+  PROJECT_NAME: template
 
 jobs:
   deploy:
@@ -81,7 +75,7 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ steps.terraform_outputs.outputs.supabase_service_role_key }}
           SUPABASE_DB_PASSWORD: ${{ steps.terraform_outputs.outputs.supabase_db_password }}
         run: |
-          WORKER_NAME="${{ github.event.inputs.project_name }}-api-${{ github.event.inputs.environment }}"
+          WORKER_NAME=$API_WORKER_NAME-api
           echo "Uploading secrets to worker: $WORKER_NAME"
           
           echo "$SUPABASE_URL" | npx wrangler secret put SUPABASE_URL --name $WORKER_NAME

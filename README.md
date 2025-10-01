@@ -12,54 +12,23 @@ Get a cloudflare api token with these permissions:
 
 - Account > Workers Scripts > Edit
 - Account > Account Settings > Read
-- 
+
 
 ### Supabase
 
 Create a Supabase account. Copy the org id and a bearer token
 
-### Terraform
+### Github Actions Secrets
 
-Install terraform and log in.
-
-```sh
-brew tap hashicorp/tap 
-```
-```sh
-brew install hashicorp/tap/terraform
-```
-
-```
-terraform login
-```
+Put the following variables
 
 Create a .env based on .env.example and save it somewhere (It can be reused across projects)
 
 ## Once per project:
 
-Clone the repo, copy paste your .env into the root
-
-```sh
-chmod +x ./terraform/setup.sh
-```
-
-```sh
-source .env && ./terraform/setup.sh <args>
-```
-
-```sh
-terraform init
-```
-```sh
-terraform plan
-```
-```sh
-terraform apply
-```
+Clone the repo.
 
 Once terraform is set up, push the code to github and run the "deploy" workflow (wip)
-
-
 
 # Development
 

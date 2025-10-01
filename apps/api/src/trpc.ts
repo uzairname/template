@@ -1,20 +1,19 @@
-import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { initTRPC} from '@trpc/server'
-import { type Session } from '@supabase/supabase-js'
 import { type FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 import { createServerClient } from '@supabase/ssr'
 
-export async function createContext(opts: FetchCreateContextFnOptions) {
-  const { env } = getCloudflareContext()
+// Define the shape of your Cloudflare environment
+
+export async function createContext(opts: FetchCreateContextFnOptions & { env: CloudflareEnv }) {
   
   // Parse cookies from the request
   const cookieHeader = opts.req.headers.get('cookie') || ''
   const cookies = parseCookies(cookieHeader)
   
-  // Create Supabase client with cookies
+    // Create Supabase client with cookies
   const supabase = createServerClient(
-    env.SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    opts.env.SUPABASE_URL,
+    opts.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
@@ -32,7 +31,7 @@ export async function createContext(opts: FetchCreateContextFnOptions) {
   const { data: { session } } = await supabase.auth.getSession()
 
   return {
-    env,
+    env: opts.env,
     session,
     supabase
   }

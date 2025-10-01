@@ -4,7 +4,7 @@ terraform {
   cloud {
     organization = "uz"
     workspaces {
-      name = "template-production"
+      name = "template"
     }
   }
 
@@ -94,13 +94,7 @@ module "cloudflare" {
 
   account_id = var.cloudflare_account_id
   cloudflare_api_token = var.cloudflare_api_token
-  worker_name  = "${var.project_name}-api-${var.environment}"
-
-  supabase_url              = module.supabase.url
-  supabase_anon_key         = module.supabase.anon_key
-  supabase_service_role_key = module.supabase.service_role_key
-  supabase_db_password      = module.supabase.db_password
-  supabase_project_id       = module.supabase.project_id
+  worker_name  = "${var.project_name}-api"
 }
 
 # ---- OUTPUTS ----

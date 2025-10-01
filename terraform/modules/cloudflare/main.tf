@@ -24,33 +24,6 @@ variable "cloudflare_api_token" {
   sensitive   = true
 }
 
-
-variable "supabase_url" {
-  type        = string
-  sensitive   = true
-}
-
-variable "supabase_anon_key" {
-  type        = string
-  sensitive   = true
-}
-
-variable "supabase_service_role_key" {
-  type        = string
-  sensitive   = true
-}
-
-variable "supabase_db_password" {
-  type        = string
-  sensitive   = true
-}
-
-variable "supabase_project_id" {
-  type        = string
-  sensitive   = true
-}
-
-
 # The Cloudflare Worker script resource
 resource "cloudflare_worker" "worker" {
   account_id = var.account_id
