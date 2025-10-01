@@ -3,6 +3,7 @@ name: 'Setup Project'
 on:
   workflow_dispatch:
 
+
 env:
   PROJECT_NAME: template
 
@@ -11,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      actions: write
     
     outputs:
       supabase_public_url: ${{ steps.terraform_outputs.outputs.supabase_public_url }}
@@ -58,21 +59,12 @@ jobs:
           echo "supabase_db_password=$(terraform output -raw supabase_db_password)" >> $GITHUB_OUTPUT
           echo "postgres_uri=$(terraform output -raw postgres_uri)" >> $GITHUB_OUTPUT
 
-      - name: Update Repository Variable
-        uses: mmoyaferrer/set-github-variable@v1.0.0
-        with:
-          name: 'SUPABASE_PUBLIC_URL'
-          value: ${{ steps.terraform_outputs.outputs.supabase_public_url }}
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GH_PAT_FOR_SECRETS }}
-
-      - name: Update Repository Variable 
-        uses: mmoyaferrer/set-github-variable@v1.0.0
-        with:
-          name: 'SUPABASE_ANON_KEY'
-          value: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GH_PAT_FOR_SECRETS }}
+      - name: Update Repository Variables
+        env: 
+          GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
+        run: |
+          gh variable set SUPABASE_PUBLIC_URL --body "${{ steps.terraform_outputs.outputs.supabase_public_url }}"
+          gh variable set SUPABASE_ANON_KEY --body "${{ steps.terraform_outputs.outputs.supabase_anon_key }}"
 
   cloudflare-secrets:
     strategy:
