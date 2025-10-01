@@ -65,6 +65,7 @@ jobs:
         run: |
           gh variable set SUPABASE_PUBLIC_URL --body "${{ steps.terraform_outputs.outputs.supabase_public_url }}"
           gh variable set SUPABASE_ANON_KEY --body "${{ steps.terraform_outputs.outputs.supabase_anon_key }}"
+          gh variable set POSTGRES_URI --body "${{ steps.terraform_outputs.outputs.postgres_uri }}"
 
       - name: Update Repository Secrets
         env:
