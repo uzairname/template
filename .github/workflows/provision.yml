@@ -58,6 +58,7 @@ jobs:
         run: terraform apply -auto-approve
 
       - name: Update Repository Variables
+        working-directory: ./terraform
         env: 
           GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
         run: |
@@ -68,6 +69,7 @@ jobs:
           gh variable set POSTGRES_URI --body "$(terraform output -raw postgres_uri)"
 
       - name: Update Repository Secrets
+        working-directory: ./terraform
         env:
           GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
         run: |
