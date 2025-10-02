@@ -39,7 +39,7 @@ Set the following secrets. They can be the same across projects:
 - `SUPABASE_BEARER_TOKEN` Your Supabase user's API token
 - `SUPABASE_ORG_ID` Supabase organization id
 - `SENTRY_ORG_SLUG` Sentry organization slug
-- `SENTRY_TOKEN` Your Sentry organization's API Token
+- `SENTRY_AUTH_TOKEN` Your Sentry organization's API Token
 
 
 

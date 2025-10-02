@@ -70,7 +70,7 @@ variable "base_url" {
 }
 
 # Sentry
-variable "sentry_token" {
+variable "sentry_auth_token" {
   description = "Sentry Auth Token"
   type        = string
   sensitive   = true
@@ -92,7 +92,7 @@ provider "cloudflare" {
 }
 
 provider "sentry" {
-  token = var.sentry_token
+  token = var.sentry_auth_token
 }
 
 
