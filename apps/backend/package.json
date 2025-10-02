@@ -1,21 +1,22 @@
 {
-	"name": "@repo/backend",
-	"version": "1.0.0",
-	"private": true,
-	"scripts": {
+  "name": "@repo/backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
     "dev": "wrangler dev --env development",
-		"deploy": "wrangler deploy --env production",
-		"cf-typegen": "wrangler types --env-interface CloudflareEnv ../../packages/api/src/cloudflare-env.d.ts"
-	},
+    "deploy": "wrangler deploy --env production",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv ../../packages/api/src/cloudflare-env.d.ts"
+  },
   "dependencies": {
-    "hono": "^4.6.13",
+    "@repo/api": "workspace:*",
+    "@sentry/cloudflare": "^10.17.0",
     "@trpc/client": "^11.6.0",
     "@trpc/server": "^11.6.0",
-    "@repo/api": "workspace:*",
+    "hono": "^4.6.13",
     "zod": "^4.1.11"
   },
   "devDependencies": {
-		"typescript": "^5",
-		"wrangler": "^4.40.1"
+    "typescript": "^5",
+    "wrangler": "^4.40.1"
   }
 }

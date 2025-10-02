@@ -8,10 +8,7 @@ These instructions are for MacOS
 
 ### Cloudflare
 
-Get a cloudflare api token with these permissions:
-
-- Account > Workers Scripts > Edit
-- Account > Account Settings > Read
+Get 
 
 ### Supabase
 
@@ -27,11 +24,30 @@ Create a .env based on .env.example and save it somewhere (It can be reused acro
 
 Clone the repo.
 
+### Set Github Secrets
+
+Set the following secrets. They can be the same across projects:
+
+- `GH_PAT_FOR_SECRETS`
+- `TFC_ORGANIZATION` Terraform cloud organization
+- `TFC_TOKEN` Terraform cloud token
+- `APP_KEY` random url-safe string of your choosing
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`: A cloudflare api token with these permissions:
+  - Account > Workers Scripts > Edit
+  - Account > Account Settings > Read
+- `SUPABASE_BEARER_TOKEN` Your Supabase user's API token
+- `SUPABASE_ORG_ID` Supabase organization id
+- `SENTRY_ORG_SLUG` Sentry organization slug
+- `SENTRY_TOKEN` Your Sentry organization's API Token
+
+
+
 ### (Optional) Set Names
 
 If you want to change the name to something other than `template`, do the following:
 
-1. Envure that the project name is consistent across:
+1. Envure that the **project name** is consistent across:
 
 - `terraform/main.tf`
 
@@ -64,6 +80,8 @@ If you add or modify cloudflare worker apps inside an `apps` directory, such as 
 - `apps/your-app/wrangler.jsonc`
 - The matrix in `.github/workflows/deploy.yml` and `.github/workflows/provision.yml`
 - `terraform/cloudflare/main.tf`
+- `terraform/sentry/main.tf`: Update the sentry projects accordingly.
+
 
 ### (Optional) Set Domains
 
@@ -114,8 +132,8 @@ The next time the app is deployed, migrations will be applied
 
 To quickly deploy, run
 
-```
-pnpm deploy --filter @repo/admin
+```bash
+pnpm run deploy
 ```
 
 # Reference

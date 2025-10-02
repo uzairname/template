@@ -17,9 +17,9 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.0"
     }
-    local = {
-      source = "hashicorp/local"
-      version = "~> 2.0"
+    sentry = {
+      source = "jianyuan/sentry"
+      version = "~> 0.14"
     }
   }
 }
@@ -69,6 +69,17 @@ variable "base_url" {
   default     = "http://localhost:3000"
 }
 
+# Sentry
+variable "sentry_token" {
+  description = "Sentry Auth Token"
+  type        = string
+  sensitive   = true
+}
+
+variable "sentry_organization_slug" {
+  description = "Sentry Organization Slug"
+  type        = string
+}
 
 # ---- PROVIDERS ----
 
@@ -79,6 +90,11 @@ provider "supabase" {
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
+
+provider "sentry" {
+  token = var.sentry_token
+}
+
 
 # ---- MODULES ----
 
@@ -99,6 +115,13 @@ module "cloudflare" {
   account_id = var.cloudflare_account_id
   cloudflare_api_token = var.cloudflare_api_token
   project_name  = "${var.project_name}"
+}
+
+# Sentry
+module "sentry" {
+  source = "./modules/sentry"
+  organization = var.sentry_organization_slug
+  project_name = var.project_name
 }
 
 # ---- OUTPUTS ----
@@ -125,4 +148,18 @@ output "supabase_db_password" {
 output "postgres_uri" {
   value     = module.supabase.postgres_uri
   sensitive = true
+}
+
+# Sentry
+
+output "sentry_dsn_backend_public" {
+  value = module.sentry.backend_dsn_public
+}
+
+output "sentry_dsn_landing_public" {
+  value = module.sentry.landing_dsn_public
+}
+
+output "sentry_dsn_admin_public" {
+  value = module.sentry.admin_dsn_public
 }

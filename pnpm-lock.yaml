@@ -82,7 +82,7 @@ importers:
         version: 0.544.0(react@19.1.0)
       next:
         specifier: 15.4.6
-        version: 15.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 15.4.6(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -138,6 +138,9 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@sentry/cloudflare':
+        specifier: ^10.17.0
+        version: 10.17.0
       '@trpc/client':
         specifier: ^11.6.0
         version: 11.6.0(@trpc/server@11.6.0(typescript@5.9.2))(typescript@5.9.2)
@@ -180,7 +183,7 @@ importers:
         version: 0.544.0(react@19.1.0)
       next:
         specifier: 15.4.6
-        version: 15.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 15.4.6(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -229,7 +232,7 @@ importers:
         version: 11.6.0(typescript@5.9.2)
       drizzle-orm:
         specifier: ^0.44.5
-        version: 0.44.5(postgres@3.4.7)
+        version: 0.44.5(@opentelemetry/api@1.9.0)(postgres@3.4.7)
       zod:
         specifier: ^4.1.11
         version: 4.1.11
@@ -245,7 +248,7 @@ importers:
         version: link:../utils
       drizzle-orm:
         specifier: ^0.44.5
-        version: 0.44.5(postgres@3.4.7)
+        version: 0.44.5(@opentelemetry/api@1.9.0)(postgres@3.4.7)
       postgres:
         specifier: ^3.4.7
         version: 3.4.7
@@ -1460,6 +1463,10 @@ packages:
     peerDependencies:
       wrangler: ^4.38.0
 
+  '@opentelemetry/api@1.9.0':
+    resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
+    engines: {node: '>=8.0.0'}
+
   '@poppinss/colors@4.1.5':
     resolution: {integrity: sha512-FvdDqtcRCtz6hThExcFOgW0cWX+xwSMWcRuQe5ZEb2m7cVQOAVZOIMt+/v9RxGiD9/OY16qJBXK4CVKWAPalBw==}
 
@@ -1827,6 +1834,19 @@ packages:
 
   '@rushstack/eslint-patch@1.12.0':
     resolution: {integrity: sha512-5EwMtOqvJMMa3HbmxLlF74e+3/HhwBTMcvt3nqVJgGCozO6hzIPOBlwm8mGVNR9SN2IJpxSnlxczyDjcn7qIyw==}
+
+  '@sentry/cloudflare@10.17.0':
+    resolution: {integrity: sha512-99ZITwImTbIkMNQReJQs0NqXvOIX/AgNie9pjWnPeLqTiv5jji0ZMnXyd5YSS58iuqqnDqETnbomoFjpvh/ufA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@cloudflare/workers-types': ^4.x
+    peerDependenciesMeta:
+      '@cloudflare/workers-types':
+        optional: true
+
+  '@sentry/core@10.17.0':
+    resolution: {integrity: sha512-UVIvxSzS0n5QbIDPyFf0WX9I77Of1bcr6a0sCEKfjhJGmGQ8mFWoWgR2gF4wcPw60XUrzbryCr79eOsIHLQ5cw==}
+    engines: {node: '>=18'}
 
   '@sindresorhus/is@7.1.0':
     resolution: {integrity: sha512-7F/yz2IphV39hiS2zB4QYVkivrptHHh0K8qJJd9HhuWSdvf8AN7NpebW3CcDZDBQsUPMoDKWsY2WWgW7bqOcfA==}
@@ -6314,6 +6334,8 @@ snapshots:
       - encoding
       - supports-color
 
+  '@opentelemetry/api@1.9.0': {}
+
   '@poppinss/colors@4.1.5':
     dependencies:
       kleur: 4.1.5
@@ -6658,6 +6680,13 @@ snapshots:
   '@rtsao/scc@1.1.0': {}
 
   '@rushstack/eslint-patch@1.12.0': {}
+
+  '@sentry/cloudflare@10.17.0':
+    dependencies:
+      '@opentelemetry/api': 1.9.0
+      '@sentry/core': 10.17.0
+
+  '@sentry/core@10.17.0': {}
 
   '@sindresorhus/is@7.1.0': {}
 
@@ -7927,8 +7956,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.5(postgres@3.4.7):
+  drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(postgres@3.4.7):
     optionalDependencies:
+      '@opentelemetry/api': 1.9.0
       postgres: 3.4.7
 
   dunder-proto@1.0.1:
@@ -8999,7 +9029,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  next@15.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  next@15.4.6(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@next/env': 15.4.6
       '@swc/helpers': 0.5.15
@@ -9017,6 +9047,7 @@ snapshots:
       '@next/swc-linux-x64-musl': 15.4.6
       '@next/swc-win32-arm64-msvc': 15.4.6
       '@next/swc-win32-x64-msvc': 15.4.6
+      '@opentelemetry/api': 1.9.0
       sharp: 0.34.4
     transitivePeerDependencies:
       - '@babel/core'
