@@ -97,19 +97,6 @@ module "cloudflare" {
   project_name  = "${var.project_name}"
 }
 
-# ---- LOCAL FILE FOR SENSITIVE OUTPUTS ----
-
-resource "local_file" "sensitive_outputs" {
-  content = jsonencode({
-    supabase_anon_key         = module.supabase.anon_key
-    supabase_service_role_key = module.supabase.service_role_key
-    supabase_db_password      = module.supabase.db_password
-    postgres_uri              = module.supabase.postgres_uri
-  })
-  filename        = "${path.module}/terraform-outputs.json"
-  file_permission = "0600"
-}
-
 # ---- OUTPUTS ----
 
 output "supabase_public_url" {

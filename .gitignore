@@ -16,6 +16,7 @@
 .terraform.lock.hcl
 terraform.tfplan
 terraform-outputs.json
+terraform-outputs-full.json
 crash.log
 override.tf
 override.tf.json

@@ -59,26 +59,46 @@ jobs:
           # Get non-sensitive outputs via terraform output
           echo "supabase_public_url=$(terraform output -raw supabase_public_url)" >> $GITHUB_OUTPUT
           
-          # Read sensitive outputs from the local file created by Terraform
-          if [ -f terraform-outputs.json ]; then
-            echo "supabase_anon_key=$(jq -r '.supabase_anon_key' terraform-outputs.json)" >> $GITHUB_OUTPUT
-            echo "supabase_service_role_key=$(jq -r '.supabase_service_role_key' terraform-outputs.json)" >> $GITHUB_OUTPUT
-            echo "supabase_db_password=$(jq -r '.supabase_db_password' terraform-outputs.json)" >> $GITHUB_OUTPUT
-            echo "postgres_uri=$(jq -r '.postgres_uri' terraform-outputs.json)" >> $GITHUB_OUTPUT
-          else
-            echo "Error: terraform-outputs.json not found"
-            exit 1
-          fi
+          # For sensitive outputs, we need a different approach since Terraform Cloud runs remotely
+          # We'll use terraform output with JSON format and parse it locally
+          terraform output -json > terraform-outputs-full.json
+          
+          # Extract sensitive values from the JSON (they exist but GitHub Actions filters them in job outputs)
+          SUPABASE_ANON_KEY=$(jq -r '.supabase_anon_key.value' terraform-outputs-full.json)
+          SUPABASE_SERVICE_ROLE_KEY=$(jq -r '.supabase_service_role_key.value' terraform-outputs-full.json)
+          SUPABASE_DB_PASSWORD=$(jq -r '.supabase_db_password.value' terraform-outputs-full.json)
+          POSTGRES_URI=$(jq -r '.postgres_uri.value' terraform-outputs-full.json)
+          
+          # Write to outputs (these won't be exposed in job outputs due to GitHub's filtering)
+          echo "supabase_anon_key=$SUPABASE_ANON_KEY" >> $GITHUB_OUTPUT
+          echo "supabase_service_role_key=$SUPABASE_SERVICE_ROLE_KEY" >> $GITHUB_OUTPUT
+          echo "supabase_db_password=$SUPABASE_DB_PASSWORD" >> $GITHUB_OUTPUT
+          echo "postgres_uri=$POSTGRES_URI" >> $GITHUB_OUTPUT
+          
+          # Create a local file with sensitive data for the cloudflare-secrets job to use
+          cat > terraform-outputs.json << EOF
+          {
+            "supabase_anon_key": "$SUPABASE_ANON_KEY",
+            "supabase_service_role_key": "$SUPABASE_SERVICE_ROLE_KEY", 
+            "supabase_db_password": "$SUPABASE_DB_PASSWORD",
+            "postgres_uri": "$POSTGRES_URI"
+          }
+          EOF
+          
+          # Set file permissions
+          chmod 600 terraform-outputs.json
 
       - name: Clean up sensitive outputs file
         working-directory: ./terraform
         if: always()
         run: |
-          # Securely delete the temporary outputs file
-          if [ -f terraform-outputs.json ]; then
-            shred -vfz -n 3 terraform-outputs.json 2>/dev/null || rm -f terraform-outputs.json
-            echo "Sensitive outputs file securely deleted"
-          fi
+          # Securely delete the temporary outputs files
+          for file in terraform-outputs.json terraform-outputs-full.json; do
+            if [ -f "$file" ]; then
+              shred -vfz -n 3 "$file" 2>/dev/null || rm -f "$file"
+              echo "Sensitive outputs file $file securely deleted"
+            fi
+          done
 
       - name: Update Repository Variables
         env: 
