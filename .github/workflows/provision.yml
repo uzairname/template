@@ -17,13 +17,6 @@ jobs:
     permissions:
       actions: write
     
-    # outputs:
-    #   supabase_public_url: ${{ steps.terraform_outputs.outputs.supabase_public_url }}
-    #   supabase_anon_key: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
-    #   supabase_service_role_key: ${{ steps.terraform_outputs.outputs.supabase_service_role_key }}
-    #   supabase_db_password: ${{ steps.terraform_outputs.outputs.supabase_db_password }}
-    #   postgres_uri: ${{ steps.terraform_outputs.outputs.postgres_uri }}
-
     steps:
       - name: 'Checkout Code'
         uses: actions/checkout@v4
@@ -40,6 +33,18 @@ jobs:
         run: terraform init
         working-directory: ./terraform
 
+      - name: Terraform Plan
+        working-directory: ./terraform
+        env:
+          # These TF_VAR_ variables map to the 'variable' blocks in Terraform scripts
+          TF_VAR_project_name: "${{ env.PROJECT_NAME }}"
+          TF_VAR_supabase_bearer_token: "${{ secrets.SUPABASE_BEARER_TOKEN }}"
+          TF_VAR_supabase_org_id: "${{ secrets.SUPABASE_ORG_ID }}"
+          TF_VAR_cloudflare_api_token: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          TF_VAR_cloudflare_account_id: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          TF_VAR_base_url: "${{ env.ADMIN_BASE_URL }}"
+        run: terraform plan -out=tfplan
+
       - name: Terraform Apply
         working-directory: ./terraform
         env:
@@ -50,7 +55,7 @@ jobs:
           TF_VAR_cloudflare_api_token: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
           TF_VAR_cloudflare_account_id: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
           TF_VAR_base_url: "${{ env.ADMIN_BASE_URL }}"
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
 
       - name: Get Terraform Outputs
         id: terraform_outputs
