@@ -17,12 +17,12 @@ jobs:
     permissions:
       actions: write
     
-    outputs:
-      supabase_public_url: ${{ steps.terraform_outputs.outputs.supabase_public_url }}
-      supabase_anon_key: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
-      supabase_service_role_key: ${{ steps.terraform_outputs.outputs.supabase_service_role_key }}
-      supabase_db_password: ${{ steps.terraform_outputs.outputs.supabase_db_password }}
-      postgres_uri: ${{ steps.terraform_outputs.outputs.postgres_uri }}
+    # outputs:
+    #   supabase_public_url: ${{ steps.terraform_outputs.outputs.supabase_public_url }}
+    #   supabase_anon_key: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
+    #   supabase_service_role_key: ${{ steps.terraform_outputs.outputs.supabase_service_role_key }}
+    #   supabase_db_password: ${{ steps.terraform_outputs.outputs.supabase_db_password }}
+    #   postgres_uri: ${{ steps.terraform_outputs.outputs.postgres_uri }}
 
     steps:
       - name: 'Checkout Code'
