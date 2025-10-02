@@ -3,10 +3,49 @@ import { Hono } from 'hono'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { appRouter, type AppRouter } from '../../../packages/api/src/router'
 import { createContext } from '@repo/api'
-import { captureException, withSentry } from '@sentry/cloudflare'
+import { captureException, captureMessage, addBreadcrumb, withSentry } from '@sentry/cloudflare'
 import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono<{ Bindings: CloudflareEnv }>()
+
+// Middleware to log every request to Sentry
+app.use('*', async (c, next) => {
+  const startTime = Date.now()
+  const method = c.req.method
+  const url = c.req.url
+  const path = new URL(url).pathname
+  
+  // Add breadcrumb for the request
+  addBreadcrumb({
+    category: 'http',
+    message: `Received request: ${method} ${path}`,
+    level: 'info',
+    data: {
+      url,
+      method,
+    },
+  })
+  
+  await next()
+  
+  const duration = Date.now() - startTime
+  const status = c.res.status
+
+  // Capture a message for every request with all breadcrumbs
+  captureMessage(`${method} ${path} - ${status}`, {
+    level: status >= 400 ? 'error' : 'info',
+    tags: {
+      method,
+      path,
+      status: status.toString(),
+    },
+    extra: {
+      url,
+      duration,
+      status,
+    },
+  })
+})
 
 app.onError((err, c) => {
   captureException(err)
@@ -39,6 +78,7 @@ app.get('/', (c) => {
 export default withSentry((env: CloudflareEnv) => {
   return {
     dsn: env.SENTRY_DSN_PUBLIC,
-    sendDefaultPii: true
+    sendDefaultPii: true,
+    environment: env.ENVIRONMENT,
   }
 }, app);

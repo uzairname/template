@@ -2,7 +2,10 @@ name: 'Provision Resources'
 
 on:
   workflow_dispatch:
-
+    inputs:
+      environment:
+        required: false
+        default: 'production'
 
 env:
   PROJECT_NAME: template
