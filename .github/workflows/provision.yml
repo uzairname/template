@@ -57,23 +57,15 @@ jobs:
           TF_VAR_base_url: "${{ env.ADMIN_BASE_URL }}"
         run: terraform apply -auto-approve
 
-      - name: Get Terraform Outputs
-        id: terraform_outputs
-        working-directory: ./terraform
-        run: |
-          # Capture individual outputs as separate environment variables
-          echo "supabase_public_url=$(terraform output -raw supabase_public_url)" >> $GITHUB_OUTPUT
-          echo "supabase_anon_key=$(terraform output -raw supabase_anon_key)" >> $GITHUB_OUTPUT
-          echo "supabase_service_role_key=$(terraform output -raw supabase_service_role_key)" >> $GITHUB_OUTPUT
-          echo "supabase_db_password=$(terraform output -raw supabase_db_password)" >> $GITHUB_OUTPUT
-          echo "postgres_uri=$(terraform output -raw postgres_uri)" >> $GITHUB_OUTPUT
-
       - name: Update Repository Variables
         env: 
           GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
         run: |
-          gh variable set SUPABASE_PUBLIC_URL --body "${{ steps.terraform_outputs.outputs.supabase_public_url }}"
-          gh variable set SUPABASE_ANON_KEY --body "${{ steps.terraform_outputs.outputs.supabase_anon_key }}"
+          gh variable set SUPABASE_PUBLIC_URL --body "$(terraform output -raw supabase_public_url)"
+          gh variable set SUPABASE_ANON_KEY --body "$(terraform output -raw supabase_anon_key)"
+          gh secret set SUPABASE_SERVICE_ROLE_KEY --body "$(terraform output -raw supabase_service_role_key)"
+          gh secret set SUPABASE_DB_PASSWORD --body "$(terraform output -raw supabase_db_password)"
+          gh secret set POSTGRES_URI --body "$(terraform output -raw postgres_uri)"
 
       - name: Update Repository Secrets
         env:
