@@ -94,7 +94,7 @@ jobs:
           WORKER_NAME="${{ env.PROJECT_NAME }}-${{ matrix.app }}"
           echo "Uploading secrets to worker: $WORKER_NAME"
 
-          echo "${{ secrets.SUPABASE_PUBLIC_URL }}" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
+          echo "${{ vars.SUPABASE_PUBLIC_URL }}" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
           echo "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name $WORKER_NAME
           echo "${{ secrets.SUPABASE_DB_PASSWORD }}" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
           echo "${{ secrets.POSTGRES_URI }}" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
