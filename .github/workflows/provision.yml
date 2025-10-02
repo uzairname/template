@@ -19,10 +19,6 @@ jobs:
     
     outputs:
       supabase_public_url: ${{ steps.terraform_outputs.outputs.supabase_public_url }}
-      supabase_anon_key: ${{ steps.terraform_outputs.outputs.supabase_anon_key }}
-      supabase_service_role_key: ${{ steps.terraform_outputs.outputs.supabase_service_role_key }}
-      supabase_db_password: ${{ steps.terraform_outputs.outputs.supabase_db_password }}
-      postgres_uri: ${{ steps.terraform_outputs.outputs.postgres_uri }}
 
     steps:
       - name: 'Checkout Code'
@@ -52,30 +48,20 @@ jobs:
           TF_VAR_base_url: "${{ env.ADMIN_BASE_URL }}"
         run: terraform apply -auto-approve
 
-      - name: Get Terraform Outputs
+      - name: Get Non-Sensitive Terraform Outputs
         id: terraform_outputs
         working-directory: ./terraform
         run: |
-          # Capture individual outputs as separate environment variables
+          # Only capture non-sensitive outputs - sensitive ones are handled via TF Cloud variables
           echo "supabase_public_url=$(terraform output -raw supabase_public_url)" >> $GITHUB_OUTPUT
-          echo "supabase_anon_key=$(terraform output -raw supabase_anon_key)" >> $GITHUB_OUTPUT
-          echo "supabase_service_role_key=$(terraform output -raw supabase_service_role_key)" >> $GITHUB_OUTPUT
-          echo "supabase_db_password=$(terraform output -raw supabase_db_password)" >> $GITHUB_OUTPUT
-          echo "postgres_uri=$(terraform output -raw postgres_uri)" >> $GITHUB_OUTPUT
 
       - name: Update Repository Variables
         env: 
           GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
         run: |
           gh variable set SUPABASE_PUBLIC_URL --body "${{ steps.terraform_outputs.outputs.supabase_public_url }}"
-          gh variable set SUPABASE_ANON_KEY --body "${{ steps.terraform_outputs.outputs.supabase_anon_key }}"
-          gh variable set SUPABASE_SERVICE_ROLE_KEY --body "${{ steps.terraform_outputs.outputs.supabase_service_role_key }}"
-
-      - name: Update Repository Secrets
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
-        run: |
-          gh secret set POSTGRES_URI --body "${{ steps.terraform_outputs.outputs.postgres_uri }}"
+          # Note: Sensitive values (anon_key, service_role_key, postgres_uri) are set as 
+          # environment variables in Terraform Cloud workspace and used directly in cloudflare-secrets job
 
   cloudflare-secrets:
     strategy:
@@ -88,14 +74,49 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - name: Publish Secrets to Cloudflare Worker
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.1.7'
+          cli_config_credentials_token: ${{ secrets.TFC_TOKEN }}
+          
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: Upload Secrets to Cloudflare Worker
+        working-directory: ./terraform
+        env:
+          # These TF_VAR_ variables map to the 'variable' blocks in Terraform scripts
+          TF_VAR_project_name: "${{ env.PROJECT_NAME }}"
+          TF_VAR_supabase_bearer_token: "${{ secrets.SUPABASE_BEARER_TOKEN }}"
+          TF_VAR_supabase_org_id: "${{ secrets.SUPABASE_ORG_ID }}"
+          TF_VAR_cloudflare_api_token: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          TF_VAR_cloudflare_account_id: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          TF_VAR_base_url: "${{ env.ADMIN_BASE_URL }}"
+          CLOUDFLARE_WORKER_NAME: "${{ env.PROJECT_NAME }}-${{ matrix.app }}"
         run: |
           WORKER_NAME="${{ env.PROJECT_NAME }}-${{ matrix.app }}"
           echo "Uploading secrets to worker: $WORKER_NAME"
 
-          echo "${{ needs.terraform.outputs.supabase_public_url }}" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
-          echo "${{ needs.terraform.outputs.supabase_service_role_key }}" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name $WORKER_NAME
-          echo "${{ needs.terraform.outputs.supabase_db_password }}" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
-          echo "${{ needs.terraform.outputs.postgres_uri }}" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
+          # Get values directly from terraform state using terraform console
+          # This works even with Terraform Cloud because we're accessing the state directly
+          SUPABASE_PUBLIC_URL=$(echo "module.supabase.public_url" | terraform console)
+          SUPABASE_SERVICE_ROLE_KEY=$(echo "module.supabase.service_role_key" | terraform console)
+          SUPABASE_DB_PASSWORD=$(echo "module.supabase.db_password" | terraform console)
+          POSTGRES_URI=$(echo "module.supabase.postgres_uri" | terraform console)
+
+          # Remove quotes from terraform console output
+          SUPABASE_PUBLIC_URL=$(echo $SUPABASE_PUBLIC_URL | tr -d '"')
+          SUPABASE_SERVICE_ROLE_KEY=$(echo $SUPABASE_SERVICE_ROLE_KEY | tr -d '"')
+          SUPABASE_DB_PASSWORD=$(echo $SUPABASE_DB_PASSWORD | tr -d '"')
+          POSTGRES_URI=$(echo $POSTGRES_URI | tr -d '"')
+
+          # Upload to Cloudflare Worker
+          echo "$SUPABASE_PUBLIC_URL" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
+          echo "$SUPABASE_SERVICE_ROLE_KEY" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name $WORKER_NAME
+          echo "$SUPABASE_DB_PASSWORD" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
+          echo "$POSTGRES_URI" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
           echo "${{ secrets.APP_KEY }}" | npx wrangler secret put APP_KEY --name $WORKER_NAME
 
