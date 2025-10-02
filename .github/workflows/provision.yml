@@ -56,49 +56,12 @@ jobs:
         id: terraform_outputs
         working-directory: ./terraform
         run: |
-          # Get non-sensitive outputs via terraform output
+          # Capture individual outputs as separate environment variables
           echo "supabase_public_url=$(terraform output -raw supabase_public_url)" >> $GITHUB_OUTPUT
-          
-          # For sensitive outputs, we need a different approach since Terraform Cloud runs remotely
-          # We'll use terraform output with JSON format and parse it locally
-          terraform output -json > terraform-outputs-full.json
-          
-          # Extract sensitive values from the JSON (they exist but GitHub Actions filters them in job outputs)
-          SUPABASE_ANON_KEY=$(jq -r '.supabase_anon_key.value' terraform-outputs-full.json)
-          SUPABASE_SERVICE_ROLE_KEY=$(jq -r '.supabase_service_role_key.value' terraform-outputs-full.json)
-          SUPABASE_DB_PASSWORD=$(jq -r '.supabase_db_password.value' terraform-outputs-full.json)
-          POSTGRES_URI=$(jq -r '.postgres_uri.value' terraform-outputs-full.json)
-          
-          # Write to outputs (these won't be exposed in job outputs due to GitHub's filtering)
-          echo "supabase_anon_key=$SUPABASE_ANON_KEY" >> $GITHUB_OUTPUT
-          echo "supabase_service_role_key=$SUPABASE_SERVICE_ROLE_KEY" >> $GITHUB_OUTPUT
-          echo "supabase_db_password=$SUPABASE_DB_PASSWORD" >> $GITHUB_OUTPUT
-          echo "postgres_uri=$POSTGRES_URI" >> $GITHUB_OUTPUT
-          
-          # Create a local file with sensitive data for the cloudflare-secrets job to use
-          cat > terraform-outputs.json << EOF
-          {
-            "supabase_anon_key": "$SUPABASE_ANON_KEY",
-            "supabase_service_role_key": "$SUPABASE_SERVICE_ROLE_KEY", 
-            "supabase_db_password": "$SUPABASE_DB_PASSWORD",
-            "postgres_uri": "$POSTGRES_URI"
-          }
-          EOF
-          
-          # Set file permissions
-          chmod 600 terraform-outputs.json
-
-      - name: Clean up sensitive outputs file
-        working-directory: ./terraform
-        if: always()
-        run: |
-          # Securely delete the temporary outputs files
-          for file in terraform-outputs.json terraform-outputs-full.json; do
-            if [ -f "$file" ]; then
-              shred -vfz -n 3 "$file" 2>/dev/null || rm -f "$file"
-              echo "Sensitive outputs file $file securely deleted"
-            fi
-          done
+          echo "supabase_anon_key=$(terraform output -raw supabase_anon_key)" >> $GITHUB_OUTPUT
+          echo "supabase_service_role_key=$(terraform output -raw supabase_service_role_key)" >> $GITHUB_OUTPUT
+          echo "supabase_db_password=$(terraform output -raw supabase_db_password)" >> $GITHUB_OUTPUT
+          echo "postgres_uri=$(terraform output -raw postgres_uri)" >> $GITHUB_OUTPUT
 
       - name: Update Repository Variables
         env: 
@@ -106,13 +69,15 @@ jobs:
         run: |
           gh variable set SUPABASE_PUBLIC_URL --body "${{ steps.terraform_outputs.outputs.supabase_public_url }}"
           gh variable set SUPABASE_ANON_KEY --body "${{ steps.terraform_outputs.outputs.supabase_anon_key }}"
-          gh variable set SUPABASE_SERVICE_ROLE_KEY --body "${{ steps.terraform_outputs.outputs.supabase_service_role_key }}"
 
       - name: Update Repository Secrets
         env:
           GH_TOKEN: ${{ secrets.GH_PAT_FOR_SECRETS }}
         run: |
-          gh secret set POSTGRES_URI --body "${{ steps.terraform_outputs.outputs.postgres_uri }}"
+          gh secret set SUPABASE_SERVICE_ROLE_KEY --body "$(terraform output -raw supabase_service_role_key)"
+          gh secret set SUPABASE_DB_PASSWORD --body "$(terraform output -raw supabase_db_password)"
+          gh secret set POSTGRES_URI --body "$(terraform output -raw postgres_uri)"
+      
 
   cloudflare-secrets:
     strategy:
@@ -130,9 +95,8 @@ jobs:
           WORKER_NAME="${{ env.PROJECT_NAME }}-${{ matrix.app }}"
           echo "Uploading secrets to worker: $WORKER_NAME"
 
-          echo "${{ needs.terraform.outputs.supabase_public_url }}" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
-          echo "${{ needs.terraform.outputs.supabase_service_role_key }}" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name $WORKER_NAME
-          echo "${{ needs.terraform.outputs.supabase_db_password }}" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
-          echo "${{ needs.terraform.outputs.postgres_uri }}" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
+          echo "${{ secrets.SUPABASE_PUBLIC_URL }}" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
+          echo "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name $WORKER_NAME
+          echo "${{ secrets.SUPABASE_DB_PASSWORD }}" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
+          echo "${{ secrets.POSTGRES_URI }}" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
           echo "${{ secrets.APP_KEY }}" | npx wrangler secret put APP_KEY --name $WORKER_NAME
-
