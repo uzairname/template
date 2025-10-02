@@ -56,12 +56,29 @@ jobs:
         id: terraform_outputs
         working-directory: ./terraform
         run: |
-          # Capture individual outputs as separate environment variables
+          # Get non-sensitive outputs via terraform output
           echo "supabase_public_url=$(terraform output -raw supabase_public_url)" >> $GITHUB_OUTPUT
-          echo "supabase_anon_key=$(terraform output -raw supabase_anon_key)" >> $GITHUB_OUTPUT
-          echo "supabase_service_role_key=$(terraform output -raw supabase_service_role_key)" >> $GITHUB_OUTPUT
-          echo "supabase_db_password=$(terraform output -raw supabase_db_password)" >> $GITHUB_OUTPUT
-          echo "postgres_uri=$(terraform output -raw postgres_uri)" >> $GITHUB_OUTPUT
+          
+          # Read sensitive outputs from the local file created by Terraform
+          if [ -f terraform-outputs.json ]; then
+            echo "supabase_anon_key=$(jq -r '.supabase_anon_key' terraform-outputs.json)" >> $GITHUB_OUTPUT
+            echo "supabase_service_role_key=$(jq -r '.supabase_service_role_key' terraform-outputs.json)" >> $GITHUB_OUTPUT
+            echo "supabase_db_password=$(jq -r '.supabase_db_password' terraform-outputs.json)" >> $GITHUB_OUTPUT
+            echo "postgres_uri=$(jq -r '.postgres_uri' terraform-outputs.json)" >> $GITHUB_OUTPUT
+          else
+            echo "Error: terraform-outputs.json not found"
+            exit 1
+          fi
+
+      - name: Clean up sensitive outputs file
+        working-directory: ./terraform
+        if: always()
+        run: |
+          # Securely delete the temporary outputs file
+          if [ -f terraform-outputs.json ]; then
+            shred -vfz -n 3 terraform-outputs.json 2>/dev/null || rm -f terraform-outputs.json
+            echo "Sensitive outputs file securely deleted"
+          fi
 
       - name: Update Repository Variables
         env: 
