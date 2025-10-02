@@ -32,7 +32,7 @@ resource "sentry_team" "main" {
 # Create Sentry projects for each app
 resource "sentry_project" "admin" {
   organization = data.sentry_organization.main.id
-  team         = sentry_team.main.id
+  teams        = [sentry_team.main.id]
   name         = "${var.project_name}-admin"
   slug         = "${var.project_name}-admin"
   platform     = "javascript-nextjs"
@@ -43,7 +43,7 @@ resource "sentry_project" "admin" {
 
 resource "sentry_project" "landing" {
   organization = data.sentry_organization.main.id
-  team         = sentry_team.main.id
+  teams        = [sentry_team.main.id]
   name         = "${var.project_name}-landing"
   slug         = "${var.project_name}-landing"
   platform     = "javascript-nextjs"
@@ -53,7 +53,7 @@ resource "sentry_project" "landing" {
 
 resource "sentry_project" "backend" {
   organization = data.sentry_organization.main.id
-  team         = sentry_team.main.id
+  teams        = [sentry_team.main.id]
   name         = "${var.project_name}-backend"
   slug         = "${var.project_name}-backend"
   platform     = "node"

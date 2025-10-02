@@ -153,13 +153,13 @@ output "postgres_uri" {
 # Sentry
 
 output "sentry_dsn_backend_public" {
-  value = module.sentry.backend_dsn_public
+  value = module.sentry.dsn_backend_public
 }
 
 output "sentry_dsn_landing_public" {
-  value = module.sentry.landing_dsn_public
+  value = module.sentry.dsn_landing_public
 }
 
 output "sentry_dsn_admin_public" {
-  value = module.sentry.admin_dsn_public
+  value = module.sentry.dsn_admin_public
 }
