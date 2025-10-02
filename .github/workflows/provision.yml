@@ -57,7 +57,7 @@ jobs:
         working-directory: ./terraform
         run: |
           # Capture individual outputs as separate environment variables
-          echo "SUPABASE_PUBLIC_URL=$(terraform output -raw supabase_public_url)" >> $GITHUB_OUTPUT
+          echo "supabase_public_url=$(terraform output -raw supabase_public_url)" >> $GITHUB_OUTPUT
           echo "supabase_anon_key=$(terraform output -raw supabase_anon_key)" >> $GITHUB_OUTPUT
           echo "supabase_service_role_key=$(terraform output -raw supabase_service_role_key)" >> $GITHUB_OUTPUT
           echo "supabase_db_password=$(terraform output -raw supabase_db_password)" >> $GITHUB_OUTPUT
@@ -93,7 +93,7 @@ jobs:
           WORKER_NAME="${{ env.PROJECT_NAME }}-${{ matrix.app }}"
           echo "Uploading secrets to worker: $WORKER_NAME"
 
-          echo "${{ needs.terraform.outputs.SUPABASE_PUBLIC_URL }}" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
+          echo "${{ needs.terraform.outputs.supabase_public_url }}" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
           echo "${{ needs.terraform.outputs.supabase_service_role_key }}" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name $WORKER_NAME
           echo "${{ needs.terraform.outputs.supabase_db_password }}" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
           echo "${{ needs.terraform.outputs.postgres_uri }}" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
