@@ -1,9 +1,12 @@
 import { updateSession } from '@/utils/supabase/middleware'
+import { captureMessage } from '@sentry/nextjs'
 import { type NextRequest } from 'next/server'
+
 
 export async function middleware(request: NextRequest) {
   console.log('Middleware invoked for:', request.nextUrl.pathname)
-  return await updateSession(request)
+  const response = await updateSession(request)
+  captureMessage(`${request.method} ${request.nextUrl.pathname}`)
 }
 
 export const config = {

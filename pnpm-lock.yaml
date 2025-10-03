@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  require-in-the-middle: ^8.0.0
-
 importers:
 
   .:
@@ -23,6 +20,9 @@ importers:
       prettier-plugin-organize-imports:
         specifier: ^4.3.0
         version: 4.3.0(prettier@3.6.2)(typescript@5.9.2)
+      require-in-the-middle:
+        specifier: ^7.5.2
+        version: 7.5.2
       turbo:
         specifier: ^2.5.6
         version: 2.5.8
@@ -129,9 +129,6 @@ importers:
       import-in-the-middle:
         specifier: ^1.14.4
         version: 1.14.4
-      require-in-the-middle:
-        specifier: ^8.0.0
-        version: 8.0.0
       tailwindcss:
         specifier: ^4
         version: 4.1.13
@@ -4966,9 +4963,9 @@ packages:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
 
-  require-in-the-middle@8.0.0:
-    resolution: {integrity: sha512-9s0pnM5tH8G4dSI3pms2GboYOs25LwOGnRMxN/Hx3TYT1K0rh6OjaWf4dI0DAQnMyaEXWoGVnSTPQasqwzTTAA==}
-    engines: {node: '>=9.3.0 || >=8.10.0 <9.0.0'}
+  require-in-the-middle@7.5.2:
+    resolution: {integrity: sha512-gAZ+kLqBdHarXB64XpAe2VCjB7rIRv+mU8tfRWziHRJ5umKsIHN2tLLv6EtMw7WCdP19S0ERVMldNvxYCHnhSQ==}
+    engines: {node: '>=8.6.0'}
 
   resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
@@ -7555,7 +7552,7 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/api-logs': 0.204.0
       import-in-the-middle: 1.14.4
-      require-in-the-middle: 8.0.0
+      require-in-the-middle: 7.5.2
     transitivePeerDependencies:
       - supports-color
 
@@ -7565,7 +7562,7 @@ snapshots:
       '@opentelemetry/api-logs': 0.57.2
       '@types/shimmer': 1.2.0
       import-in-the-middle: 1.14.4
-      require-in-the-middle: 8.0.0
+      require-in-the-middle: 7.5.2
       semver: 7.7.2
       shimmer: 1.2.1
     transitivePeerDependencies:
@@ -11147,10 +11144,11 @@ snapshots:
 
   require-from-string@2.0.2: {}
 
-  require-in-the-middle@8.0.0:
+  require-in-the-middle@7.5.2:
     dependencies:
       debug: 4.4.3
       module-details-from-path: 1.0.4
+      resolve: 1.22.10
     transitivePeerDependencies:
       - supports-color
 
