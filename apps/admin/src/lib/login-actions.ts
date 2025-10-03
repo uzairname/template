@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/server'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { nonNullable } from '@repo/utils'
 import { Result, err, ok } from '@repo/utils/result'
+import { AuthError } from '@supabase/supabase-js'
 
 export async function login(email: string, password: string): Promise<Result<{ needsConfirmEmail?: boolean} | void, AuthUserError>> {
   const supabase = await createClient()
@@ -63,4 +64,21 @@ export async function signup(
     }
     return ok()
   }
+}
+
+export async function sendPasswordResetEmail(email: string): Promise<Result<void, AuthUserError>> {
+  const supabase = await createClient()
+  
+  const { env } = getCloudflareContext()
+  
+  const baseUrl = env.ADMIN_BASE_URL
+  
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${baseUrl}/auth/update-password`,
+  })
+  
+  if (error) {
+    return err(parseSupabaseError(error))
+  }
+  return ok()
 }

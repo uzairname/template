@@ -6,6 +6,8 @@
 **/copilot-intructions.md
 .venv
 
+.env.sentry-build-plugin
+
 
 # Terraform
 *.tfstate

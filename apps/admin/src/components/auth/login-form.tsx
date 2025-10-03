@@ -1,7 +1,7 @@
 'use client'
 
 import { AuthErrorType, AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
-import { login } from '@/lib/login-actions'
+import { login, sendPasswordResetEmail } from '@/lib/login-actions'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
@@ -126,15 +126,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     setAuthError(null)
     setValidationErrors({})
 
-    const supabase = createClient()
+    const result = await sendPasswordResetEmail(formData.email)
 
-    const baseUrl = nonNullable(process.env.NEXT_PUBLIC_ADMIN_BASE_URL, 'NEXT_PUBLIC_ADMIN_BASE_URL')
-    const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
-      redirectTo: `${baseUrl}/auth/update-password`,
-    })
-
-    if (error) {
-      setAuthError(parseSupabaseError(error))
+    if (!result.success) {
+      setAuthError(result.error)
     } else {
       setForgotPasswordSuccess(true)
     }

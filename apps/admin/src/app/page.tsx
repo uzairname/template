@@ -7,7 +7,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu'
 import { Separator } from '@repo/ui/components/separator'
