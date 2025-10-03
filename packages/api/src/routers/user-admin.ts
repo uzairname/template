@@ -1,9 +1,9 @@
-import { z } from 'zod'
-import { eq } from 'drizzle-orm'
-import { TRPCError } from '@trpc/server'
-import { router, adminProcedure, rootProcedure } from '../trpc'
-import { users } from '@repo/db/schema'
 import { UserRole } from '@repo/db'
+import { users } from '@repo/db/schema'
+import { TRPCError } from '@trpc/server'
+import { eq } from 'drizzle-orm'
+import { z } from 'zod'
+import { adminProcedure, rootProcedure, router } from '../trpc'
 
 /**
  * User admin router - requires admin privileges
@@ -11,20 +11,18 @@ import { UserRole } from '@repo/db'
 export const userAdminRouter = router({
   // Set a user's role to admin (root access required)
   setUserRole: rootProcedure
-    .input(z.object({
-      userId: z.uuid('Invalid user ID format'),
-      role: z.enum(UserRole)
-    }))
+    .input(
+      z.object({
+        userId: z.uuid('Invalid user ID format'),
+        role: z.enum(UserRole),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const { userId, role } = input
 
       try {
         // Check if the target user exists
-        const [targetUser] = await ctx.db
-          .select()
-          .from(users)
-          .where(eq(users.id, userId))
-          .limit(1)
+        const [targetUser] = await ctx.db.select().from(users).where(eq(users.id, userId)).limit(1)
 
         if (!targetUser) {
           throw new TRPCError({
@@ -53,9 +51,8 @@ export const userAdminRouter = router({
           user: {
             id: updatedUser.id,
             role: updatedUser.role,
-          }
+          },
         }
-
       } catch (error) {
         // Re-throw TRPCErrors as-is
         if (error instanceof TRPCError) {
@@ -73,10 +70,15 @@ export const userAdminRouter = router({
 
   // Get all users (admin-only endpoint for user management)
   getAllUsers: adminProcedure
-    .input(z.object({
-      limit: z.number().min(1).max(100).default(50),
-      offset: z.number().min(0).default(0),
-    }).optional().default(() => ({ limit: 50, offset: 0 })))
+    .input(
+      z
+        .object({
+          limit: z.number().min(1).max(100).default(50),
+          offset: z.number().min(0).default(0),
+        })
+        .optional()
+        .default(() => ({ limit: 50, offset: 0 }))
+    )
     .query(async ({ input, ctx }) => {
       const { limit, offset } = input
 
@@ -92,18 +94,17 @@ export const userAdminRouter = router({
           .orderBy(users.role) // Show admins first
 
         return {
-          users: allUsers.map(user => ({
+          users: allUsers.map((user) => ({
             id: user.id,
             role: user.role,
-            roleLabel: user.role === UserRole.Admin ? 'Admin' : 'User'
+            roleLabel: user.role === UserRole.Admin ? 'Admin' : 'User',
           })),
           pagination: {
             limit,
             offset,
-            total: allUsers.length
-          }
+            total: allUsers.length,
+          },
         }
-
       } catch (error) {
         console.error('Error fetching users:', error)
         throw new TRPCError({

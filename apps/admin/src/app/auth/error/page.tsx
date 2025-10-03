@@ -26,9 +26,7 @@ function AuthErrorContent() {
 
 export default function AuthErrorPage() {
   return (
-    <div
-      className={'min-h-screen flex items-center justify-center bg-muted/30 px-4'}
-    >
+    <div className={'min-h-screen flex items-center justify-center bg-muted/30 px-4'}>
       <Suspense fallback={<div>Loading...</div>}>
         <AuthErrorContent />
       </Suspense>

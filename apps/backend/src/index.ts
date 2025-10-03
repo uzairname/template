@@ -1,10 +1,9 @@
-
-import { Hono } from 'hono'
-import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
-import { appRouter, type AppRouter } from '../../../packages/api/src/router'
 import { createContext } from '@repo/api'
-import { captureException, captureMessage, addBreadcrumb, withSentry } from '@sentry/cloudflare'
+import { addBreadcrumb, captureException, captureMessage, withSentry } from '@sentry/cloudflare'
+import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
+import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import { appRouter, type AppRouter } from '../../../packages/api/src/router'
 
 const app = new Hono<{ Bindings: CloudflareEnv }>()
 
@@ -14,7 +13,7 @@ app.use('*', async (c, next) => {
   const method = c.req.method
   const url = c.req.url
   const path = new URL(url).pathname
-  
+
   // Add breadcrumb for the request
   addBreadcrumb({
     category: 'http',
@@ -25,15 +24,15 @@ app.use('*', async (c, next) => {
       method,
     },
   })
-  
+
   await next()
-  
+
   const duration = Date.now() - startTime
   const status = c.res.status
 
   // Capture a message for every request with all breadcrumbs
   captureMessage(`${method} ${path} - ${status}`, {
-    level: status >= 400 ? 'error' : 'info',
+    level: status >= 500 ? 'error' : 'info',
     tags: {
       method,
       path,
@@ -64,16 +63,16 @@ app.use('/api/trpc/*', async (c) => {
     createContext: (opts) => createContext({ ...opts, env: c.env }),
     onError: ({ error }) => {
       captureException(error)
-      console.error('tRPC Error:', error);
+      console.error('tRPC Error:', error)
     },
-  });
+  })
 
-  return response;
-});
+  return response
+})
 
 app.get('/', (c) => {
-  return c.text('Hello from Hono!');
-});
+  return c.text('Hello from Hono!')
+})
 
 export default withSentry((env: CloudflareEnv) => {
   return {
@@ -81,4 +80,4 @@ export default withSentry((env: CloudflareEnv) => {
     sendDefaultPii: true,
     environment: env.ENVIRONMENT,
   }
-}, app);
+}, app)

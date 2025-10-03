@@ -8,7 +8,7 @@ These instructions are for MacOS
 
 ### Cloudflare
 
-Get 
+Get
 
 ### Supabase
 
@@ -44,8 +44,6 @@ Set the following secrets. They can be the same across projects:
   - team: read and write
   - project: read and write
 
-
-
 ### (Optional) Set Names
 
 If you want to change the name to something other than `template`, do the following:
@@ -60,21 +58,20 @@ workspaces {
 }
 ```
 
-- The *env* of `.github/workflows/provision.yml`
+- The _env_ of `.github/workflows/provision.yml`
 
 ```
 env:
   PROJECT_NAME: ...
 ```
 
-
 2. Ensure that the **worker names** are consistent across:
+
 - The relevant `apps/**/wrangler.jsonc` files
 - `terraform/cloudflare/main.tf`
-- The *cloudflare-secrets* step of `.github/workflows/provision.yml`
+- The _cloudflare-secrets_ step of `.github/workflows/provision.yml`
 
 The convention is for the worker name to follow the format "project_name-app_name", where app_name is something like api, admin, etc
-
 
 ### (Optional) Set Apps
 
@@ -85,7 +82,6 @@ If you add or modify cloudflare worker apps inside an `apps` directory, such as 
 - `terraform/cloudflare/main.tf`
 - `terraform/sentry/main.tf`: Update the sentry projects accordingly.
 
-
 ### (Optional) Set Domains
 
 To configure your production domain, update the domain names and base URLs in:
@@ -95,7 +91,6 @@ To configure your production domain, update the domain names and base URLs in:
 2. The relevant `apps/**/wrangler.jsonc` files
 
 3. Routes in terraform files
-
 
 ### Run Github Action
 
@@ -118,7 +113,6 @@ npx supabase start
 ```
 
 Copy the env variables into .dev.vars
-
 
 ### Migrations
 
@@ -148,7 +142,6 @@ https://ui.shadcn.com/docs/monorepo
 
 `packages/api`: API package with tRPC router and context, to be served by @repo/backend
 
-
 # Managing Infra
 
-Supabase projects are immutable after creation. You cannot change the database password after creation. To do so, manually reset the password in the supabase dashboard, then update 
+Supabase projects are immutable after creation. You cannot change the database password after creation. To do so, manually reset the password in the supabase dashboard, then update

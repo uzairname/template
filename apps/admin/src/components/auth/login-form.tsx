@@ -6,7 +6,6 @@ import { createClient } from '@/utils/supabase/client'
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
 import { Label } from '@repo/ui/components/label'
-import { nonNullable } from '@repo/utils/utils'
 import { useMemo, useState } from 'react'
 import { z } from 'zod'
 
@@ -108,7 +107,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       // Refresh the client-side session to trigger auth state change
       const supabase = createClient()
       await supabase.auth.refreshSession()
-      
+
       onSuccess?.()
     }
 

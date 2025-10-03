@@ -1,10 +1,11 @@
 'use client'
 
-import { AuthErrorType, AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
+import { AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'
 import { Label } from '@repo/ui/components/label'
+import { captureException } from '@sentry/nextjs'
 import { useState } from 'react'
 import { z } from 'zod'
 
@@ -21,11 +22,11 @@ const passwordSchema = z
 type PasswordFormData = z.infer<typeof passwordSchema>
 type ValidationErrors = Partial<Record<keyof PasswordFormData, string>>
 
-interface UpdatePasswordFormProps {
+interface ResetPasswordFormProps {
   onSuccess?: () => void
 }
 
-export function UpdatePasswordForm({ onSuccess }: UpdatePasswordFormProps) {
+export function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps) {
   const [formData, setFormData] = useState<PasswordFormData>({
     password: '',
     confirmPassword: '',
@@ -74,7 +75,7 @@ export function UpdatePasswordForm({ onSuccess }: UpdatePasswordFormProps) {
     })
 
     if (error) {
-      console.log('Password update error:', error)
+      captureException(error)
       setAuthError(parseSupabaseError(error))
     } else {
       // Refresh the client-side session to trigger auth state change

@@ -12,31 +12,27 @@ export async function updateSession(request: NextRequest) {
   const [url, key] = [env.SUPABASE_PUBLIC_URL, env.SUPABASE_SERVICE_ROLE_KEY]
   if (!url || !key) {
     throw new Error(
-      'Missing SUPABASE_PUBLIC_URL or SUPABASE_SERVICE_ROLE_KEY environment variables' + 
-      ` (url: ${url}, key: ${key})`
+      'Missing SUPABASE_PUBLIC_URL or SUPABASE_SERVICE_ROLE_KEY environment variables' +
+        ` (url: ${url}, key: ${key})`
     )
   }
 
-  const supabase = createServerClient(
-    url,
-    key,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll()
       },
-    }
-  )
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+        supabaseResponse = NextResponse.next({
+          request,
+        })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        )
+      },
+    },
+  })
 
   // Do not run code between createServerClient and
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug
@@ -44,9 +40,7 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: DO NOT REMOVE auth.getUser()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  await supabase.auth.getUser()
 
   return supabaseResponse
 }

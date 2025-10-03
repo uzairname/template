@@ -1,8 +1,7 @@
-import { config } from 'dotenv'
 import { nonNullable } from '@repo/utils'
-import { createClient } from '../client'
+import { config } from 'dotenv'
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
-
+import { createClient } from '../client'
 
 async function migrate_database(postgres_url: string): Promise<void> {
   console.log('migrating')
@@ -14,8 +13,6 @@ async function migrate_database(postgres_url: string): Promise<void> {
   console.log('done migrating')
 }
 
-
-
 const args = process.argv.slice(2)
 const envPath = args.length == 1 ? args[0] : undefined
 config({ path: envPath ?? '../../.env', override: true })
@@ -26,7 +23,7 @@ migrate_database(postgresUri)
   .then(() => {
     process.exit(0)
   })
-  .catch(e => {
+  .catch((e) => {
     console.error(e)
     process.exit(1)
   })

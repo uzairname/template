@@ -1,6 +1,6 @@
 'use client'
 
-import { AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
+import { AuthUserError } from '@/lib/auth-errors'
 import { signup } from '@/lib/login-actions'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@repo/ui/components/button'
@@ -98,7 +98,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         // Refresh the client-side session to trigger auth state change
         const supabase = createClient()
         await supabase.auth.refreshSession()
-        
+
         onSuccess?.()
       }
     } else {
@@ -184,7 +184,12 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         </div>
       )}
 
-      <Button type="button" onClick={handleSubmit} disabled={loading || showConfirmEmailInfo} className="w-full">
+      <Button
+        type="button"
+        onClick={handleSubmit}
+        disabled={loading || showConfirmEmailInfo}
+        className="w-full"
+      >
         {loading ? 'Creating Account...' : 'Create Account'}
       </Button>
     </div>

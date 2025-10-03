@@ -78,6 +78,10 @@ resource "supabase_settings" "auth" {
 
   auth = jsonencode({
     site_url = var.base_url
+    additional_redirect_urls = [
+      "${var.base_url}/auth/reset-password",
+      "${var.base_url}/auth/confirm"
+    ]
     mailer_templates_confirmation_content = <<-EOT
       <h2>Confirm your signup</h2>
       <p>Follow this link to confirm your user:</p>
