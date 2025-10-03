@@ -5,8 +5,8 @@
 .open-next
 **/copilot-intructions.md
 .venv
-
 .env.sentry-build-plugin
+.env.local
 
 
 # Terraform

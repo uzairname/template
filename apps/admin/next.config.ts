@@ -2,25 +2,20 @@ import { withSentryConfig } from '@sentry/nextjs'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
 }
 
 export default withSentryConfig(nextConfig, {
-  // For all available options, see:
+  // Docs:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
+  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
   org: 'u-qs',
 
   project: 'template-admin',
 
-  // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
 
-  // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
-
-  // For all available options, see:
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
   // // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
   // // This can increase your server load as well as your hosting bill.
