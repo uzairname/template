@@ -28,7 +28,7 @@ import { LogIn, LogOut, User, UserCheck, UserPlus } from 'lucide-react'
 function HomeContent() {
   const { isMobile } = useSidebar()
   const { user, signOut } = useAuth()
-  throw new Error("notimplemented")
+  if (!!LogIn) throw new Error("notimplemented")
   return (
     <>
       <Sidebar collapsible="offcanvas" variant="inset">
