@@ -43,6 +43,9 @@ jobs:
           # These repository variables are set by the provision workflow
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_PUBLIC_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_ENVIRONMENT: production
+          # Set sentry DSN for each app
+          NEXT_PUBLIC_SENTRY_DSN: ${{ vars[format('SENTRY_DSN_{0}_PUBLIC', matrix.app)] }}
         run: |
           cd apps/${{ matrix.app }}
           pnpm run deploy

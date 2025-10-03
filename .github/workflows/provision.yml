@@ -59,6 +59,9 @@ jobs:
         run: |
           gh variable set SUPABASE_PUBLIC_URL --body "$(terraform output -raw supabase_public_url)"
           gh variable set SUPABASE_ANON_KEY --body "$(terraform output -raw supabase_anon_key)"
+          gh variable set SENTRY_DSN_BACKEND_PUBLIC --body "$(terraform output -raw sentry_dsn_backend_public)"
+          gh variable set SENTRY_DSN_ADMIN_PUBLIC --body "$(terraform output -raw sentry_dsn_admin_public)"
+          gh variable set SENTRY_DSN_LANDING_PUBLIC --body "$(terraform output -raw sentry_dsn_landing_public)"
 
       - name: Update Repository Secrets
         working-directory: ./terraform
