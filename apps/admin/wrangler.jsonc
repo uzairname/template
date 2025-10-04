@@ -14,6 +14,12 @@
   "observability": {
     "enabled": true
   },
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "template",
+    }
+  ],
   "env": {
     "development": {
       "name": "template-admin-dev",
@@ -32,7 +38,7 @@
         "ADMIN_BASE_URL": "https://template-admin.5r.workers.dev",
         "LANDING_BASE_URL": "https://template-landing.5r.workers.dev",
         "BACKEND_BASE_URL": "https://template-backend.5r.workers.dev"
-      }
+      },
     }
   }
 }

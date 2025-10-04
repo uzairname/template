@@ -104,3 +104,4 @@ jobs:
           echo "${{ secrets.SUPABASE_DB_PASSWORD }}" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
           echo "${{ secrets.POSTGRES_URI }}" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
           echo "${{ secrets.APP_KEY }}" | npx wrangler secret put APP_KEY --name $WORKER_NAME
+          echo "incremental-cache-${{ env.PROJECT_NAME }}-${{matrix.app}}-${{ github.event.inputs.environment }}" | npx wrangler secret put NEXT_INC_CACHE_R2_PREFIX --name $WORKER_NAME

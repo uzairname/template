@@ -50,20 +50,11 @@ If you want to change the name to something other than `template`, do the follow
 
 1. Envure that the **project name** is consistent across:
 
-- `terraform/main.tf`
-
-```
-workspaces {
-  name = ...
-}
-```
+- The _workspace_ name in `terraform/main.tf`
 
 - The _env_ of `.github/workflows/provision.yml`
 
-```
-env:
-  PROJECT_NAME: ...
-```
+- The _name of the R2 binding_ in the `.wrangler.jsonc` of each nextjs app.
 
 2. Ensure that the **worker names** are consistent across:
 
