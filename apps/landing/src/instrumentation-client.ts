@@ -10,4 +10,4 @@ Sentry.init({
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
 
-console.log('Sentry initialized for client')
+console.info('Sentry initialized for client')

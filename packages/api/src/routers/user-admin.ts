@@ -3,7 +3,8 @@ import { users } from '@repo/db/schema'
 import { TRPCError } from '@trpc/server'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { adminProcedure, rootProcedure, router } from '../trpc'
+import { adminProcedure, rootProcedure } from '../middlewares'
+import { router } from '../trpc'
 
 /**
  * User admin router - requires admin privileges

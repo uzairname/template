@@ -2,6 +2,9 @@
 	"name": "@repo/api",
 	"version": "1.0.0",
 	"private": true,
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "@repo/db": "workspace:*",
     "@supabase/ssr": "^0.7.0",
@@ -12,6 +15,8 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+		"@repo/eslint-config": "workspace:*",
+		"eslint": "^9",
 		"typescript": "^5"
   },
   "exports": {

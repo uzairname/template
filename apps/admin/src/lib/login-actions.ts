@@ -1,9 +1,9 @@
 'use server'
 
-import { AuthErrorType, AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
+import { AuthErrorType, type AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
 import { createClient } from '@/utils/supabase/server'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
-import { Result, err, ok } from '@repo/utils/result'
+import { type Result, err, ok } from '@repo/utils/result'
 
 export async function login(
   email: string,
@@ -19,7 +19,7 @@ export async function login(
   if (error) {
     return err(parseSupabaseError(error))
   } else {
-    console.log(`User logged in: user ${data.user}, session ${data.session}`)
+    console.info(`User logged in: ${data.user.email}`)
     // If there is a user but no session, it means the user needs to confirm their email
     if (data.user && !data.session) {
       return ok({ needsConfirmEmail: true })
@@ -83,4 +83,3 @@ export async function sendPasswordResetEmail(email: string): Promise<Result<void
   }
   return ok()
 }
-

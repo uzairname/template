@@ -9,7 +9,8 @@
   },
   "scripts": {
     "generate": "drizzle-kit generate",
-    "migrate": "tsx scripts/migrate.ts"
+    "migrate": "tsx scripts/migrate.ts",
+    "lint": "eslint ."
   },
   "dependencies": {
     "drizzle-orm": "^0.44.5",
@@ -17,7 +18,9 @@
     "@repo/utils": "workspace:*"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "drizzle-kit": "^0.31.5",
+    "eslint": "^9",
     "tsx": "^4.20.6"
   }
 }

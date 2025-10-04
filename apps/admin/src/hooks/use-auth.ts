@@ -24,18 +24,18 @@ export function useAuth() {
       }
 
       if (session) {
-        console.log('Current user from session:', session.user)
+        console.info('Current user from session:', session.user.email)
         setUser(session.user)
       }
       setLoading(false)
     }
 
-    getUser()
+    void getUser()
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email || 'no user')
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.info('Auth state changed:', event, session?.user?.email || 'no user')
 
       setUser(session?.user || null)
       setLoading(false)

@@ -1,6 +1,6 @@
 'use client'
 
-import { AuthErrorType, AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
+import { AuthErrorType, type AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
 import { login, sendPasswordResetEmail } from '@/lib/login-actions'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@repo/ui/components/button'

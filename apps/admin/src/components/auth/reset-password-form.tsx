@@ -1,6 +1,6 @@
 'use client'
 
-import { AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
+import { type AuthUserError, parseSupabaseError } from '@/lib/auth-errors'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@repo/ui/components/button'
 import { Input } from '@repo/ui/components/input'

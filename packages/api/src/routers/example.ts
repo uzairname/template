@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { publicProcedure, rootProcedure, router } from '../trpc'
+import { rootProcedure } from '../middlewares'
+import { publicProcedure, router } from '../trpc'
 
 /**
  * Example router with some basic procedures

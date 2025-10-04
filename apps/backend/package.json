@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "wrangler dev --env development",
     "deploy:prod": "wrangler deploy --env production",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv ../../packages/api/src/cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv ../../packages/api/src/cloudflare-env.d.ts",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@repo/api": "workspace:*",
@@ -16,6 +17,8 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "^9",
     "typescript": "^5",
     "wrangler": "^4.40.1"
   }

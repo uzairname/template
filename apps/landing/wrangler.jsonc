@@ -22,7 +22,13 @@
         "ADMIN_BASE_URL": "http://localhost:3000",
         "LANDING_BASE_URL": "http://localhost:3001",
         "BACKEND_BASE_URL": "http://localhost:8989"
-      }
+      },
+      "r2_buckets": [
+        {
+          "binding": "NEXT_INC_CACHE_R2_BUCKET",
+          "bucket_name": "template",
+        }
+      ],
     },
     "production": {
       // "route": { "pattern": "www.example.com", "custom_domain": true },

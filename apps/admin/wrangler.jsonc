@@ -21,8 +21,15 @@
         "ENVIRONMENT": "development",
         "ADMIN_BASE_URL": "http://localhost:3000",
         "LANDING_BASE_URL": "http://localhost:3001",
-        "BACKEND_BASE_URL": "http://localhost:8989"
-      }
+        "BACKEND_BASE_URL": "http://localhost:8989",
+        "NEXT_INC_CACHE_R2_PREFIX": "incremental-cache-admin-prod"
+      },
+      "r2_buckets": [
+        {
+          "binding": "NEXT_INC_CACHE_R2_BUCKET",
+          "bucket_name": "template",
+        }
+      ],
     },
     "production": {
       "name": "template-admin",
@@ -31,7 +38,8 @@
         "ENVIRONMENT": "production",
         "ADMIN_BASE_URL": "https://template-admin.5r.workers.dev",
         "LANDING_BASE_URL": "https://template-landing.5r.workers.dev",
-        "BACKEND_BASE_URL": "https://template-backend.5r.workers.dev"
+        "BACKEND_BASE_URL": "https://template-backend.5r.workers.dev",
+        "NEXT_INC_CACHE_R2_PREFIX": "incremental-cache-admin-prod"
       },
       "r2_buckets": [
         {

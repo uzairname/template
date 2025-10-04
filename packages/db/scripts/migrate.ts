@@ -3,9 +3,8 @@ import { config } from 'dotenv'
 import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import { createClient } from '../client'
 
-
 const args = process.argv.slice(2)
-const envPath = args.length == 1 ? args[0] : undefined
+const envPath = args.length === 1 ? args[0] : undefined
 config({ path: envPath ?? '../../.env', override: true })
 
 async function migrate_database(): Promise<void> {

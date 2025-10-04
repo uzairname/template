@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/nextjs'
 
 let sentryInitialized = true
 
-export async function register() {
+export function register() {
   if (sentryInitialized) return
 
   const { env } = getCloudflareContext()

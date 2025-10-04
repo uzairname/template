@@ -4,21 +4,9 @@ This is a template
 
 These instructions are for MacOS
 
-## One Time
+## One time:
 
-### Cloudflare
-
-Get
-
-### Supabase
-
-Create a Supabase account. Copy the org id and a bearer token
-
-### Github Actions Secrets
-
-Put the following variables
-
-Create a .env based on .env.example and save it somewhere (It can be reused across projects)
+Create a Supabase, Cloudflare, Terraform Cloud, and Sentry account.
 
 ## Once per project:
 
@@ -33,9 +21,10 @@ Set the following secrets. They can be the same across projects:
 - `TFC_TOKEN` Terraform cloud token
 - `APP_KEY` random url-safe string of your choosing
 - `CLOUDFLARE_ACCOUNT_ID`
-- `CLOUDFLARE_API_TOKEN`: A cloudflare api token with these permissions:
+- `CLOUDFLARE_API_TOKEN` an API token with these permissions:
   - Account > Workers Scripts > Edit
   - Account > Account Settings > Read
+  - Account > Workers R2 Storage > Edit
 - `SUPABASE_BEARER_TOKEN` Your Supabase user's API token
 - `SUPABASE_ORG_ID` Supabase organization id
 - `SENTRY_ORG_SLUG` Sentry organization slug
@@ -65,7 +54,6 @@ The convention is for the worker name to follow the format "project_name-app_nam
 3. Set the terraform cloud workspace name
 
 - The _workspace_ name in `terraform/main.tf` (doesn't have to match anything else, but be unique)
-
 
 ### (Optional) Set Apps
 

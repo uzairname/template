@@ -3,8 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "packageManager": "pnpm@10.17.1",
+  "scripts": {
+    "lint": "eslint ."
+  },
   "exports": {
     "./*": "./src/*.ts",
     ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "^9",
+    "typescript": "^5"
   }
 }

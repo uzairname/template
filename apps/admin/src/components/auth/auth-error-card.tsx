@@ -84,7 +84,7 @@ export function createAuthErrorDetails({
         ],
       }
 
-    case 'verification_failed':
+    case 'verification_failed': {
       const isExpired =
         errorMessage?.toLowerCase().includes('expired') ||
         errorMessage?.toLowerCase().includes('invalid')
@@ -105,6 +105,7 @@ export function createAuthErrorDetails({
         ],
         showHelpSection: true,
       }
+    }
 
     default:
       return {

@@ -7,11 +7,13 @@
     "deploy:prod": "turbo run deploy:prod",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\" --config prettierrc.json"
   },
   "devDependencies": {
     "dotenv": "^16.4.5",
     "dotenv-cli": "^10.0.0",
+    "eslint": "^9.16.0",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.3.0",
     "turbo": "^2.5.6",
