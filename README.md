@@ -50,11 +50,9 @@ If you want to change the name to something other than `template`, do the follow
 
 1. Envure that the **project name** is consistent across:
 
-- The _workspace_ name in `terraform/main.tf`
-
 - The _env_ of `.github/workflows/provision.yml`
 
-- The _name of the R2 binding_ in the `.wrangler.jsonc` of each nextjs app.
+- The _name of the R2 binding_ in the `.wrangler.jsonc` of each nextjs app (this must match the name in `cloudflare/main.tf`)
 
 2. Ensure that the **worker names** are consistent across:
 
@@ -63,6 +61,11 @@ If you want to change the name to something other than `template`, do the follow
 - The _cloudflare-secrets_ step of `.github/workflows/provision.yml`
 
 The convention is for the worker name to follow the format "project_name-app_name", where app_name is something like api, admin, etc
+
+3. Set the terraform cloud workspace name
+
+- The _workspace_ name in `terraform/main.tf` (doesn't have to match anything else, but be unique)
+
 
 ### (Optional) Set Apps
 

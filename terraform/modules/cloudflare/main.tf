@@ -39,3 +39,9 @@ resource "cloudflare_worker" "worker-admin" {
   account_id = var.account_id
   name = "${var.project_name}-admin"
 }
+
+# The R2 bucket for the project
+resource "cloudflare_r2_bucket" "r2_bucket" {
+  account_id = var.account_id
+  name       = var.project_name
+}
