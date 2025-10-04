@@ -49,4 +49,4 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           cd apps/${{ matrix.app }}
-          pnpm run deploy
+          pnpm run deploy:prod

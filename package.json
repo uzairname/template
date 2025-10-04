@@ -4,7 +4,7 @@
   "packageManager": "pnpm@10.17.1",
   "type": "module",
   "scripts": {
-    "deploy": "turbo run deploy",
+    "deploy:prod": "turbo run deploy:prod",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\" --config prettierrc.json"

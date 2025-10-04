@@ -1,25 +1,20 @@
 import { nonNullable } from '@repo/utils'
 import { config } from 'dotenv'
-import { migrate } from 'drizzle-orm/node-postgres/migrator'
+import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import { createClient } from '../client'
 
-async function migrate_database(postgres_url: string): Promise<void> {
-  console.log('migrating')
-
-  const db = createClient(postgres_url)
-
-  await migrate(db, { migrationsFolder: 'drizzle-migrations' })
-
-  console.log('done migrating')
-}
 
 const args = process.argv.slice(2)
 const envPath = args.length == 1 ? args[0] : undefined
 config({ path: envPath ?? '../../.env', override: true })
 
-const postgresUri = nonNullable(process.env.POSTGRES_URI, 'postgres uri')
+async function migrate_database(): Promise<void> {
+  const postgresUri = nonNullable(process.env.POSTGRES_URI, 'postgres uri')
+  const db = createClient(postgresUri)
+  await migrate(db, { migrationsFolder: 'drizzle-migrations' })
+}
 
-migrate_database(postgresUri)
+migrate_database()
   .then(() => {
     process.exit(0)
   })
