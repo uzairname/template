@@ -53,20 +53,20 @@ resource "cloudflare_r2_bucket" "r2_bucket" {
 
 # ROUTES AND DNS
 
-resource "cloudflare_worker_route" "route-backend" {
-  account_id = var.account_id
-  pattern    = "uzairname.org/api/*"
-  script_name = cloudflare_worker.worker-backend.name
+resource "cloudflare_workers_route" "route-backend" {
+  zone_id = "27509b89a6498d16040bb49d97d710a1"
+  pattern = "uzairname.org/api/*"
+  script = cloudflare_worker.worker-backend.name
 }
 
-resource "cloudflare_worker_route" "route-landing" {
-  account_id = var.account_id
-  pattern    = "uzairname.org/*"
-  script_name = cloudflare_worker.worker-landing.name
+resource "cloudflare_workers_route" "route-landing" {
+  zone_id = "27509b89a6498d16040bb49d97d710a1"
+  pattern = "uzairname.org/*"
+  script = cloudflare_worker.worker-landing.name
 }
 
-resource "cloudflare_worker_route" "route-admin" {
-  account_id = var.account_id
-  pattern    = "${var.admin_base_url}/*"
-  script_name = cloudflare_worker.worker-admin.name
+resource "cloudflare_workers_route" "route-admin" {
+  zone_id = "27509b89a6498d16040bb49d97d710a1"
+  pattern = "${var.admin_base_url}/*"
+  script = cloudflare_worker.worker-admin.name
 }
