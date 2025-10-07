@@ -24,6 +24,15 @@ terraform {
   }
 }
 
+# ---- LOCALS ----
+
+locals {
+  backend_url = "https://uzairname.org"
+  admin_url = "https://admin.uzairname.org"
+  landing_url = "https://uzairname.org"
+}
+
+
 # ---- VARIABLES ----
 
 variable "project_name" {
@@ -45,7 +54,6 @@ variable "supabase_org_id" {
 }
 
 variable "supabase_region" {
-  description = "Supabase project region"
   type        = string
   default     = "us-east-1"
 }
@@ -53,31 +61,21 @@ variable "supabase_region" {
 
 # Cloudflare
 variable "cloudflare_api_token" {
-  description = "Cloudflare API Token"
   type        = string
   sensitive   = true
 }
 
 variable "cloudflare_account_id" {
-  description = "Cloudflare Account ID"
   type        = string
-}
-
-variable "admin_base_url" {
-  description = "The base URL of your website for auth redirects and email links"
-  type        = string
-  default     = "https://admin.uzairname.org"
 }
 
 # Sentry
 variable "sentry_auth_token" {
-  description = "Sentry Auth Token"
   type        = string
   sensitive   = true
 }
 
 variable "sentry_organization_slug" {
-  description = "Sentry Organization Slug"
   type        = string
 }
 
@@ -105,7 +103,7 @@ module "supabase" {
   project_name = "${var.project_name}"
   org_id       = var.supabase_org_id
   region       = var.supabase_region
-  admin_base_url = var.admin_base_url
+  admin_base_url = local.admin_url
 }
 
 # Cloudflare
@@ -114,13 +112,16 @@ module "cloudflare" {
 
   account_id = var.cloudflare_account_id
   cloudflare_api_token = var.cloudflare_api_token
-  project_name  = "${var.project_name}"
-  admin_base_url = var.admin_base_url
+  project_name  = var.project_name
+  backend_url = local.backend_url
+  admin_url = local.admin_url
+  landing_url = local.landing_url
 }
 
 # Sentry
 module "sentry" {
   source = "./modules/sentry"
+
   organization = var.sentry_organization_slug
   project_name = var.project_name
 }

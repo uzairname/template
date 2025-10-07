@@ -30,16 +30,16 @@
     },
     "production": {
       "name": "template-admin",
-      "vars": {
-        "ENVIRONMENT": "production",
-        "ADMIN_BASE_URL": "https://admin.uzairname.org"
-      },
-      "r2_buckets": [
-        {
-          "binding": "NEXT_INC_CACHE_R2_BUCKET",
-          "bucket_name": "template",
-        }
-      ],
+      // "vars": {
+      //   "ENVIRONMENT": "production",
+      //   "ADMIN_BASE_URL": "https://admin.uzairname.org"
+      // },
+      // "r2_buckets": [
+      //   {
+      //     "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      //     "bucket_name": "template",
+      //   }
+      // ],
     }
   }
 }

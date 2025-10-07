@@ -147,6 +147,9 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       '@sentry/cloudflare':
         specifier: ^10.17.0
         version: 10.17.0

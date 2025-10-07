@@ -1,6 +1,3 @@
-
-
-
 /**
  * Ensures that a value is not `null` or `undefined`.
  * Throws an error if the value is `null` or `undefined`.
@@ -17,7 +14,6 @@ export function nonNullable<T>(value: T, description?: string): NonNullable<T> {
   }
   return value
 }
-
 
 /**
  * Truncates a string to a specified maximum length, showing both start and end with ellipsis in the middle

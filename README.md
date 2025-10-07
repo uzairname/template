@@ -10,11 +10,13 @@ Create a Supabase, Cloudflare, Terraform Cloud, and Sentry account.
 
 ## Once per project:
 
-Clone the repo.
+### Clone Template
+
+Clone the template. Create a new repo if making a separate project.
 
 ### Set Github Secrets
 
-Set the following secrets. They can be the same across projects:
+Add the following variables to github actions. They can be the same across projects:
 
 - `GH_PAT_FOR_SECRETS`
 - `TFC_ORGANIZATION` Terraform cloud organization
@@ -68,7 +70,7 @@ If you add or modify cloudflare worker apps inside an `apps` directory, such as 
 
 To configure your production domain, ensure that the domain names and base URLs are up to date in:
 
-1. Routes in `terraform/main.tf`, and `terraform/cloudflare/main.tf`
+1. The "locals" field in `terraform/main.tf`
 
 2. NEXT_PUBLIC_BACKEND_URL in `.github/workflows/deploy.yml`
 

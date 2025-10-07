@@ -1,10 +1,11 @@
 import { createContext } from '@repo/api'
+import { appRouter, type AppRouter } from '@repo/api/router'
+import { nonNullable } from '@repo/utils'
 import { addBreadcrumb, captureException, captureMessage, withSentry } from '@sentry/cloudflare'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
-import { appRouter, type AppRouter } from '../../../packages/api/src/router'
 
 const app = new Hono<{ Bindings: CloudflareEnv }>()
 
@@ -97,6 +98,6 @@ export default withSentry((env: CloudflareEnv) => {
   return {
     dsn: env.SENTRY_DSN_PUBLIC,
     sendDefaultPii: true,
-    environment: env.ENVIRONMENT,
+    environment: nonNullable(env.ENVIRONMENT, 'ENVIRONMENT'),
   }
 }, app)
