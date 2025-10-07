@@ -32,6 +32,10 @@ packages/
 
 ## Critical Patterns
 
+### 0. General Conventions
+
+Do not create new .md files after making changes. Do not write comments explaining changes made, but only the current state of the code.
+
 ### 1. Authentication Flow (Supabase + tRPC)
 
 **Client → Middleware → API → Protected Procedures**

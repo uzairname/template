@@ -27,9 +27,30 @@ export async function updateSession(request: NextRequest) {
         supabaseResponse = NextResponse.next({
           request,
         })
-        cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
-        )
+        cookiesToSet.forEach(({ name, value, options }) => {
+          // For production: set cookies on parent domain to work across subdomains
+          const isProduction = env.ENVIRONMENT === 'production'
+          const cookieOptions = {
+            ...options,
+            domain: isProduction && request.url.includes('uzairname.org') ? '.uzairname.org' : options?.domain,
+            sameSite: (isProduction ? 'none' : options?.sameSite) as
+              | 'lax'
+              | 'strict'
+              | 'none'
+              | undefined,
+            secure: isProduction ? true : options?.secure,
+          }
+          
+          console.log('[Middleware] Setting cookie:', {
+            name,
+            domain: cookieOptions.domain,
+            sameSite: cookieOptions.sameSite,
+            secure: cookieOptions.secure,
+            isProduction,
+          })
+          
+          supabaseResponse.cookies.set(name, value, cookieOptions)
+        })
       },
     },
   })
