@@ -83,12 +83,19 @@ resource "cloudflare_worker_version" "worker-backend-version" {
       text = "production"
     }
   ]
+
+  depends_on = [cloudflare_worker.worker-backend]
 }
 
 resource "cloudflare_workers_route" "route-backend" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
   pattern = "${var.backend_url}/api/*"
   script = cloudflare_worker.worker-backend.name
+
+  depends_on = [
+    cloudflare_worker.worker-backend,
+    cloudflare_worker_version.worker-backend-version
+  ]
 }
 
 
@@ -132,12 +139,22 @@ resource "cloudflare_worker_version" "worker-admin-version" {
       text = var.admin_url
     }
   ]
+
+  depends_on = [
+    cloudflare_worker.worker-admin,
+    cloudflare_r2_bucket.r2_bucket
+  ]
 }
 
 resource "cloudflare_workers_route" "route-admin" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
   pattern = "${var.admin_url}/*"
   script = cloudflare_worker.worker-admin.name
+
+  depends_on = [
+    cloudflare_worker.worker-admin,
+    cloudflare_worker_version.worker-admin-version
+  ]
 }
 
 
@@ -177,6 +194,11 @@ resource "cloudflare_worker_version" "worker-landing-version" {
       text = "production"
     }
   ]
+
+  depends_on = [
+    cloudflare_worker.worker-landing,
+    cloudflare_r2_bucket.r2_bucket
+  ]
 }
 
 
@@ -184,5 +206,10 @@ resource "cloudflare_workers_route" "route-landing" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
   pattern = "${var.landing_url}/*"
   script = cloudflare_worker.worker-landing.name
+
+  depends_on = [
+    cloudflare_worker.worker-landing,
+    cloudflare_worker_version.worker-landing-version
+  ]
 }
 
