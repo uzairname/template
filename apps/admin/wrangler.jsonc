@@ -33,7 +33,6 @@
     },
     "production": {
       "name": "template-admin",
-      // "route": { "pattern": "admin.example.com", "custom_domain": true },
       "vars": {
         "ENVIRONMENT": "production",
         "ADMIN_BASE_URL": "https://template-admin.5r.workers.dev",

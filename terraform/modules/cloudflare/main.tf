@@ -45,3 +45,24 @@ resource "cloudflare_r2_bucket" "r2_bucket" {
   account_id = var.account_id
   name       = var.project_name
 }
+
+
+# ROUTES AND DNS
+
+resource "cloudflare_worker_route" "route-backend" {
+  account_id = var.account_id
+  pattern    = "uzairname.org/api/*"
+  script_name = cloudflare_worker.worker-backend.name
+}
+
+resource "cloudflare_worker_route" "route-landing" {
+  account_id = var.account_id
+  pattern    = "uzairname.org/*"
+  script_name = cloudflare_worker.worker-landing.name
+}
+
+resource "cloudflare_worker_route" "route-admin" {
+  account_id = var.account_id
+  pattern    = "admin.uzairname.org/*"
+  script_name = cloudflare_worker.worker-admin.name
+}

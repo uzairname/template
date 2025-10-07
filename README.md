@@ -80,40 +80,72 @@ Once terraform is set up, push the code to github and run the "provision" and "d
 
 # Development
 
-## Local Development
+## Supabase (Optional; only for local development)
 
-### Supabase (Optional; only for local development)
-
-```
+```bash
+# Start and run local supabase container
 npx supabase init
-```
-
-Then
-
-```
+# After starting, copy the env variables into .dev.vars
 npx supabase start
 ```
 
-Copy the env variables into .dev.vars
-
-### Migrations
+## Migrations
 
 To deploy changes to `packages/db/src/schema`, run
 
 ```bash
-# Working dir: packages/db
-npx drizzle-kit generate
+# Generate migrations. 
+cd packages/db && npx drizzle-kit generate
 ```
 
 The next time the app is deployed, migrations will be applied
 
-### Deployment
+## Lint & Format
 
-To quickly deploy, run
+### Commands
 
 ```bash
-pnpm run deploy
+# Run prettier
+pnpm run format
 ```
+
+```bash
+# Lint all packages
+pnpm lint
+
+# Lint with auto-fix
+pnpm lint:fix
+
+# Lint specific package
+cd apps/admin && pnpm lint
+```
+
+### eslint configs:
+
+1. **`base.js`** - Base TypeScript configuration for all packages
+   - Console statement warnings
+   - Promise handling rules
+
+2. **`react.js`** - Configuration for React/Next.js applications
+   - Extends base configuration
+   - React-specific rules
+   - React Hooks rules
+   - JSX validation
+
+3. **`node.js`** - Configuration for Node.js/Cloudflare Workers
+   - Extends base configuration
+   - Allows console statements (appropriate for server-side)
+   - Server-specific linting rules
+
+Relevant Docs:
+
+- [ESLint Documentation](https://eslint.org/)
+- [TypeScript ESLint](https://typescript-eslint.io/)
+- [ESLint Plugin React](https://github.com/jsx-eslint/eslint-plugin-react)
+
+## Deployment
+
+No dev deployment setup yet
 
 # Reference
 
