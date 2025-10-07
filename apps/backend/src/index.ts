@@ -2,10 +2,28 @@ import { createContext } from '@repo/api'
 import { addBreadcrumb, captureException, captureMessage, withSentry } from '@sentry/cloudflare'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
 import { appRouter, type AppRouter } from '../../../packages/api/src/router'
 
 const app = new Hono<{ Bindings: CloudflareEnv }>()
+
+// CORS middleware - allow credentials from admin app
+app.use(
+  '*',
+  cors({
+    origin: (origin) => {
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'https://template-admin.5r.workers.dev',
+      ]
+      return allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
+    },
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+  })
+)
 
 // Middleware to log every request to Sentry
 app.use('*', async (c, next) => {

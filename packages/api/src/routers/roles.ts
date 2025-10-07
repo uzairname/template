@@ -3,13 +3,24 @@ import { users } from '@repo/db/schema'
 import { TRPCError } from '@trpc/server'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { adminProcedure, rootProcedure } from '../middlewares'
+import { adminProcedure, authenticatedProcedure, rootProcedure } from '../middlewares'
 import { router } from '../trpc'
 
 /**
  * User admin router - requires admin privileges
  */
-export const userAdminRouter = router({
+export const rolesRouter = router({
+  /**
+   * Get the current authenticated user's role
+   */
+  getCurrentRole: authenticatedProcedure.query(({ ctx }) => {
+    return {
+      userId: ctx.userRecord.id,
+      role: ctx.userRecord.role,
+      roleLabel: ctx.userRecord.role === UserRole.Admin ? 'Admin' : 'User',
+    }
+  }),
+
   // Set a user's role to admin (root access required)
   setUserRole: rootProcedure
     .input(

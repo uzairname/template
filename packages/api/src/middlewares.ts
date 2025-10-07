@@ -6,6 +6,47 @@ import { createSupabaseClient } from './lib/supabase'
 import { publicProcedure, t } from './trpc'
 
 /**
+ * Authenticated middleware - verifies user is logged in and fetches user record
+ */
+const isAuthenticated = t.middleware(async ({ ctx, next }) => {
+  const supabase = createSupabaseClient(ctx.req, ctx.env)
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'You must be logged in to access this resource',
+    })
+  }
+
+  // Get user from database
+  const [userRecord] = await ctx.db
+    .select()
+    .from(users)
+    .where(eq(users.id, session.user.id))
+    .limit(1)
+
+  if (!userRecord) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'User record not found',
+    })
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      session,
+      supabase,
+      user: session.user,
+      userRecord,
+    },
+  })
+})
+
+/**
  * Admin middleware - verifies user has admin role
  */
 const isAdmin = t.middleware(async ({ ctx, next }) => {
@@ -76,6 +117,11 @@ const hasRootAccess = t.middleware(async ({ ctx, next }) => {
     },
   })
 })
+
+/**
+ * Authenticated procedure - requires valid user session
+ */
+export const authenticatedProcedure = publicProcedure.use(isAuthenticated)
 
 /**
  * Admin procedure - requires admin role

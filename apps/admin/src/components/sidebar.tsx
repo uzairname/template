@@ -1,9 +1,12 @@
 import { useAuth } from '@/hooks/use-auth'
+import { trpc } from '@/utils/trpc/client'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@repo/ui/components/dropdown-menu'
 import { Separator } from '@repo/ui/components/separator'
@@ -20,13 +23,32 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@repo/ui/components/sidebar'
-import { LogIn, LogOut, User, UserCheck, UserPlus } from 'lucide-react'
+import { BadgeCheck, LogIn, LogOut, User, UserCheck, UserPlus } from 'lucide-react'
+import { useEffect } from 'react'
 import { LoginDialog } from './auth/login-dialog'
 import { SignupDialog } from './auth/signup-dialog'
 
 function AppSidebarContent() {
   const { isMobile } = useSidebar()
   const { user, signOut } = useAuth()
+  const utils = trpc.useUtils()
+  const { data: roleData } = trpc.userAdmin.getCurrentRole.useQuery(undefined, {
+    enabled: !!user, // Only fetch if user is logged in
+    retry: false, // Don't retry on auth errors
+    refetchOnWindowFocus: false, // Don't refetch on window focus to avoid unnecessary calls
+  })
+
+  // Reset role query when user logs out, invalidate when user logs in
+  useEffect(() => {
+    if (!user) {
+      // User logged out: reset the query to clear cached data
+      utils.userAdmin.getCurrentRole.reset()
+    } else {
+      // User logged in: invalidate to fetch fresh data
+      utils.userAdmin.getCurrentRole.invalidate()
+    }
+  }, [user?.id, utils])
+
   return (
     <>
       <Sidebar collapsible="offcanvas" variant="inset">
@@ -71,8 +93,15 @@ function AppSidebarContent() {
                   align="end"
                   sideOffset={4}
                 >
-                  {user ? (
+                  {user && roleData ? (
                     <>
+                      <>
+                        <DropdownMenuLabel className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
+                          <BadgeCheck className="w-4 h-4" />
+                          Role: {roleData.roleLabel}
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                      </>
                       <DropdownMenuItem onClick={signOut}>
                         <LogOut className="w-4 h-4 mr-2" />
                         Sign out

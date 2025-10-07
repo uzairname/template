@@ -1,10 +1,10 @@
 import { exampleRouter } from './routers/example'
-import { userAdminRouter } from './routers/user-admin'
+import { rolesRouter } from './routers/roles'
 import { router } from './trpc'
 
 export const appRouter = router({
   example: exampleRouter,
-  userAdmin: userAdminRouter,
+  userAdmin: rolesRouter,
 })
 
 export type AppRouter = typeof appRouter
