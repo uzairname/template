@@ -19,9 +19,7 @@
       "name": "template-admin-dev",
       "vars": {
         "ENVIRONMENT": "development",
-        "ADMIN_BASE_URL": "http://localhost:3000",
-        "LANDING_BASE_URL": "http://localhost:3001",
-        "BACKEND_BASE_URL": "http://localhost:8989",
+        "ADMIN_BASE_URL": "http://localhost:3000"
       },
       "r2_buckets": [
         {
@@ -34,9 +32,7 @@
       "name": "template-admin",
       "vars": {
         "ENVIRONMENT": "production",
-        "ADMIN_BASE_URL": "https://template-admin.5r.workers.dev",
-        "LANDING_BASE_URL": "https://template-landing.5r.workers.dev",
-        "BACKEND_BASE_URL": "https://template-backend.5r.workers.dev",
+        "ADMIN_BASE_URL": "https://admin.uzairname.org"
       },
       "r2_buckets": [
         {

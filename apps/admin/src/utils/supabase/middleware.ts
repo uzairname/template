@@ -17,6 +17,8 @@ export async function updateSession(request: NextRequest) {
     )
   }
 
+  const isProduction = env.ENVIRONMENT === 'production'
+
   const supabase = createServerClient(url, key, {
     cookies: {
       getAll() {
@@ -28,7 +30,12 @@ export async function updateSession(request: NextRequest) {
           request,
         })
         cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
+          supabaseResponse.cookies.set(name, value, {
+            ...options,
+            domain: isProduction ? '.uzairname.org' : undefined,
+            sameSite: isProduction ? 'none' : 'lax',
+            secure: isProduction,
+          })
         )
       },
     },

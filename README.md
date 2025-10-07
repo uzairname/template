@@ -70,6 +70,10 @@ To configure your production domain, update the domain names and base URLs in:
 
 1. Routes in `terraform/main.tf`, and `terraform/cloudflare/main.tf`
 
+2. NEXT_PUBLIC_BACKEND_URL in `.github/workflows/deploy.yml`
+
+3. Variables in each wrangler.jsonc
+
 ### Run Github Action
 
 Once terraform is set up, push the code to github and run the "provision" and "deploy" workflow

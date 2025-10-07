@@ -16,20 +16,14 @@
     "development": {
       "name": "template-backend-dev",
       "vars": {
-        "ENVIRONMENT": "development",
-        "ADMIN_BASE_URL": "http://localhost:3000",
-        "LANDING_BASE_URL": "http://localhost:3001",
-        "BACKEND_BASE_URL": "http://localhost:8989"
+        "ENVIRONMENT": "development"
       }
     },
     "production": {
       // "route": { "pattern": "api.example.com", "custom_domain": true },
       "name": "template-backend", // This must match the worker name in terraform/main.tf
       "vars": {
-        "ENVIRONMENT": "production",
-        "ADMIN_BASE_URL": "https://template-admin.5r.workers.dev",
-        "LANDING_BASE_URL": "https://template-landing.5r.workers.dev",
-        "BACKEND_BASE_URL": "https://template-backend.5r.workers.dev"
+        "ENVIRONMENT": "production"
       }
     }
   }
