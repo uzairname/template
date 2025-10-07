@@ -1,4 +1,5 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare'
+import { getCookieDomainFromUrl } from '@repo/utils'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -18,6 +19,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   const isProduction = env.ENVIRONMENT === 'production'
+  const cookieDomain = isProduction ? getCookieDomainFromUrl(env.ADMIN_BASE_URL) : undefined
 
   const supabase = createServerClient(url, key, {
     cookies: {
@@ -32,7 +34,7 @@ export async function updateSession(request: NextRequest) {
         cookiesToSet.forEach(({ name, value, options }) =>
           supabaseResponse.cookies.set(name, value, {
             ...options,
-            domain: isProduction ? '.uzairname.org' : undefined,
+            domain: cookieDomain,
             sameSite: isProduction ? 'none' : 'lax',
             secure: isProduction,
           })

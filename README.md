@@ -66,13 +66,15 @@ If you add or modify cloudflare worker apps inside an `apps` directory, such as 
 
 ### (Optional) Set Domains
 
-To configure your production domain, update the domain names and base URLs in:
+To configure your production domain, ensure that the domain names and base URLs are up to date in:
 
 1. Routes in `terraform/main.tf`, and `terraform/cloudflare/main.tf`
 
 2. NEXT_PUBLIC_BACKEND_URL in `.github/workflows/deploy.yml`
 
-3. Variables in each wrangler.jsonc
+3. `..._BASE_URL` Variables in each wrangler.jsonc file
+
+4. CORS policy in `apps/backend/src/index.ts`
 
 ### Run Github Action
 
