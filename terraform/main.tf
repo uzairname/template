@@ -79,21 +79,6 @@ variable "sentry_organization_slug" {
   type        = string
 }
 
-# ---- PROVIDERS ----
-
-provider "supabase" {
-  access_token = var.supabase_bearer_token
-}
-
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
-}
-
-provider "sentry" {
-  token = var.sentry_auth_token
-}
-
-
 # ---- MODULES ----
 
 # Supabase
@@ -101,6 +86,7 @@ module "supabase" {
   source = "./modules/supabase"
 
   project_name = "${var.project_name}"
+  supabase_bearer_token = var.supabase_bearer_token
   org_id       = var.supabase_org_id
   region       = var.supabase_region
   admin_base_url = local.admin_url
@@ -122,6 +108,7 @@ module "cloudflare" {
 module "sentry" {
   source = "./modules/sentry"
 
+  sentry_auth_token = var.sentry_auth_token
   organization = var.sentry_organization_slug
   project_name = var.project_name
 }

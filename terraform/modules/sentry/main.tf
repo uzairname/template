@@ -7,6 +7,18 @@ terraform {
   }
 }
 
+
+provider "sentry" {
+  token = var.sentry_auth_token
+}
+
+# Variables
+variable "sentry_auth_token" {
+  description = "Sentry Auth Token"
+  type        = string
+  sensitive   = true
+}
+
 variable "organization" {
   description = "Sentry organization slug"
   type        = string

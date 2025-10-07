@@ -8,6 +8,11 @@ terraform {
   }
 }
 
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
+}
+
 # Variables
 
 variable "project_name" {
@@ -59,6 +64,18 @@ resource "cloudflare_worker_version" "worker-backend-version" {
   account_id = var.account_id
   worker_id = cloudflare_worker.worker-backend.id
 
+  modules = [{
+    name = "index.js"
+    content_file = "index.js"
+    content_type = "application/javascript+module"
+  }]
+
+  main_module = "index.js"
+
+  lifecycle {
+    ignore_changes = [modules, main_module]
+  }
+
   bindings = [
     {
       name = "ENVIRONMENT"
@@ -84,6 +101,18 @@ resource "cloudflare_worker" "worker-admin" {
 resource "cloudflare_worker_version" "worker-admin-version" {
   account_id = var.account_id
   worker_id = cloudflare_worker.worker-admin.id
+
+  modules = [{
+    name = "index.js"
+    content_file = "index.js"
+    content_type = "application/javascript+module"
+  }]
+
+  main_module = "index.js"
+
+  lifecycle {
+    ignore_changes = [modules, main_module]
+  }
 
   bindings = [
     {
@@ -122,6 +151,18 @@ resource "cloudflare_worker" "worker-landing" {
 resource "cloudflare_worker_version" "worker-landing-version" {
   account_id = var.account_id
   worker_id = cloudflare_worker.worker-landing.id
+
+  modules = [{
+    name = "index.js"
+    content_file = "index.js"
+    content_type = "application/javascript+module"
+  }]
+
+  main_module = "index.js"
+
+  lifecycle {
+    ignore_changes = [modules, main_module]
+  }
 
   bindings = [
     {

@@ -25,6 +25,16 @@ terraform {
   }
 }
 
+provider "supabase" {
+  access_token = var.supabase_bearer_token
+}
+
+variable "supabase_bearer_token" {
+  description = "Supabase Management API Token"
+  type        = string
+  sensitive   = true
+}
+
 variable "project_name" {
   type = string
 }
