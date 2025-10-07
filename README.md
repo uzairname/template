@@ -96,9 +96,11 @@ cd packages/db && npx drizzle-kit generate
 
 The next time the app is deployed, migrations will be applied
 
-## Lint & Format
+## Build, Lint & Format
 
-### Commands
+Before commiting, format and build to ensure consistency.
+
+### Lint
 
 ```bash
 # Run prettier
@@ -114,6 +116,16 @@ pnpm lint:fix
 
 # Lint specific package
 cd apps/admin && pnpm lint
+```
+
+### Build
+
+```bash
+cd apps/admin && pnpm build
+
+cd apps/landing && pnpm build
+
+cd apps/backend && pnpm build
 ```
 
 ### eslint configs:
@@ -138,6 +150,7 @@ Relevant Docs:
 - [ESLint Documentation](https://eslint.org/)
 - [TypeScript ESLint](https://typescript-eslint.io/)
 - [ESLint Plugin React](https://github.com/jsx-eslint/eslint-plugin-react)
+
 
 ## Deployment
 

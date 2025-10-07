@@ -42,12 +42,12 @@ function AppSidebarContent() {
   useEffect(() => {
     if (!user) {
       // User logged out: reset the query to clear cached data
-      utils.userAdmin.getCurrentRole.reset()
+      void utils.userAdmin.getCurrentRole.reset()
     } else {
       // User logged in: invalidate to fetch fresh data
-      utils.userAdmin.getCurrentRole.invalidate()
+      void utils.userAdmin.getCurrentRole.invalidate()
     }
-  }, [user?.id, utils])
+  }, [user?.id, utils, user])
 
   return (
     <>

@@ -168,6 +168,11 @@ pnpm dev                 # Start all apps
 pnpm lint                # Lint everything
 pnpm format              # Format with Prettier
 
+# Build
+cd apps/admin && pnpm build
+cd apps/landing && pnpm build
+cd apps/backend && pnpm build
+
 # Apps
 cd apps/admin && pnpm deploy:prod  # Deploy to Cloudflare
 
