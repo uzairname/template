@@ -68,11 +68,7 @@ If you add or modify cloudflare worker apps inside an `apps` directory, such as 
 
 To configure your production domain, update the domain names and base URLs in:
 
-1. `.github/workflows/provision.yml`
-
-2. The relevant `apps/**/wrangler.jsonc` files
-
-3. Routes in terraform files
+1. Routes in `terraform/main.tf`, and `terraform/cloudflare/main.tf`
 
 ### Run Github Action
 

@@ -63,10 +63,10 @@ variable "cloudflare_account_id" {
   type        = string
 }
 
-variable "base_url" {
+variable "admin_base_url" {
   description = "The base URL of your website for auth redirects and email links"
   type        = string
-  default     = "http://localhost:3000"
+  default     = "https://admin.uzairname.org"
 }
 
 # Sentry
@@ -105,7 +105,7 @@ module "supabase" {
   project_name = "${var.project_name}"
   org_id       = var.supabase_org_id
   region       = var.supabase_region
-  base_url     = var.base_url
+  admin_base_url = var.admin_base_url
 }
 
 # Cloudflare
@@ -115,6 +115,7 @@ module "cloudflare" {
   account_id = var.cloudflare_account_id
   cloudflare_api_token = var.cloudflare_api_token
   project_name  = "${var.project_name}"
+  admin_base_url = var.admin_base_url
 }
 
 # Sentry

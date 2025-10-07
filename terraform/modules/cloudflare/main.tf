@@ -24,6 +24,11 @@ variable "cloudflare_api_token" {
   sensitive   = true
 }
 
+variable "admin_base_url" {
+  description = "The base URL of your admin website for auth redirects and email links"
+  type        = string
+}
+
 # The Cloudflare Worker script resource
 resource "cloudflare_worker" "worker-backend" {
   account_id = var.account_id
@@ -46,7 +51,6 @@ resource "cloudflare_r2_bucket" "r2_bucket" {
   name       = var.project_name
 }
 
-
 # ROUTES AND DNS
 
 resource "cloudflare_worker_route" "route-backend" {
@@ -63,6 +67,6 @@ resource "cloudflare_worker_route" "route-landing" {
 
 resource "cloudflare_worker_route" "route-admin" {
   account_id = var.account_id
-  pattern    = "admin.uzairname.org/*"
+  pattern    = "${var.admin_base_url}/*"
   script_name = cloudflare_worker.worker-admin.name
 }
