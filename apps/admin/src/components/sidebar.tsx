@@ -33,20 +33,16 @@ function AppSidebarContent() {
   const { user, signOut } = useAuth()
   const utils = trpc.useUtils()
   const { data: roleData } = trpc.userAdmin.getCurrentRole.useQuery(undefined, {
-    enabled: !!user, // Only fetch if user is logged in
-    retry: false, // Don't retry on auth errors
-    refetchOnWindowFocus: false, // Don't refetch on window focus to avoid unnecessary calls
-    staleTime: Infinity, // Keep data fresh to avoid unnecessary refetches
+    enabled: !!user,
+    retry: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 
-  // Reset role query when user logs out or changes
   useEffect(() => {
     if (!user) {
-      // User logged out: reset the query to clear cached data without triggering refetch
       void utils.userAdmin.getCurrentRole.reset()
     }
-    // When user logs in, the enabled flag will automatically trigger a fetch
-    // No need to manually invalidate
   }, [user, utils])
 
   return (
