@@ -94,7 +94,7 @@ resource "cloudflare_workers_route" "route-backend" {
 
   depends_on = [
     cloudflare_worker.worker-backend,
-    cloudflare_worker_version.worker-backend-version
+    # cloudflare_worker_version.worker-backend-version
   ]
 }
 
@@ -153,7 +153,7 @@ resource "cloudflare_workers_route" "route-admin" {
 
   depends_on = [
     cloudflare_worker.worker-admin,
-    cloudflare_worker_version.worker-admin-version
+    # cloudflare_worker_version.worker-admin-version
   ]
 }
 
@@ -209,7 +209,7 @@ resource "cloudflare_workers_route" "route-landing" {
 
   depends_on = [
     cloudflare_worker.worker-landing,
-    cloudflare_worker_version.worker-landing-version
+    # cloudflare_worker_version.worker-landing-version
   ]
 }
 
