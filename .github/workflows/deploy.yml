@@ -51,3 +51,18 @@ jobs:
         run: |
           cd apps/${{ matrix.app }}
           pnpm run deploy:prod
+
+      - name: Set Cloudflare Worker Secrets
+        env:
+          SENTRY_DSN_PUBLIC: ${{ matrix.app == 'backend' && vars.SENTRY_DSN_BACKEND_PUBLIC || matrix.app == 'landing' && vars.SENTRY_DSN_LANDING_PUBLIC || vars.SENTRY_DSN_ADMIN_PUBLIC }}
+        run: |
+          WORKER_NAME="template-${{ matrix.app }}"
+          echo "Setting secrets for worker: $WORKER_NAME"
+
+          echo "${{ vars.SUPABASE_PUBLIC_URL }}" | npx wrangler secret put SUPABASE_PUBLIC_URL --name $WORKER_NAME
+          echo "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name $WORKER_NAME
+          echo "${{ secrets.SUPABASE_DB_PASSWORD }}" | npx wrangler secret put SUPABASE_DB_PASSWORD --name $WORKER_NAME
+          echo "${{ secrets.POSTGRES_URI }}" | npx wrangler secret put POSTGRES_URI --name $WORKER_NAME
+          echo "${{ secrets.APP_KEY }}" | npx wrangler secret put APP_KEY --name $WORKER_NAME
+          echo "$SENTRY_DSN_PUBLIC" | npx wrangler secret put SENTRY_DSN_PUBLIC --name $WORKER_NAME
+          echo "incremental-cache-template-${{ matrix.app }}-production" | npx wrangler secret put NEXT_INC_CACHE_R2_PREFIX --name $WORKER_NAME
