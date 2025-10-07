@@ -47,6 +47,7 @@ jobs:
           # Set sentry DSN for each app
           NEXT_PUBLIC_SENTRY_DSN: ${{ vars[format('SENTRY_DSN_{0}_PUBLIC', matrix.app)] }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          NEXT_PUBLIC_BACKEND_URL: https://uzairname.org
         run: |
           cd apps/${{ matrix.app }}
           pnpm run deploy:prod
