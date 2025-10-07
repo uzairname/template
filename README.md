@@ -90,7 +90,7 @@ npx supabase start
 To deploy changes to `packages/db/src/schema`, run
 
 ```bash
-# Generate migrations. 
+# Generate migrations.
 cd packages/db && npx drizzle-kit generate
 ```
 
@@ -150,7 +150,6 @@ Relevant Docs:
 - [ESLint Documentation](https://eslint.org/)
 - [TypeScript ESLint](https://typescript-eslint.io/)
 - [ESLint Plugin React](https://github.com/jsx-eslint/eslint-plugin-react)
-
 
 ## Deployment
 

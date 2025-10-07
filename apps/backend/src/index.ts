@@ -16,7 +16,7 @@ app.use(
       const allowedOrigins = [
         'http://localhost:3000',
         'https://admin.uzairname.org',
-        'https://uzairname.org'
+        'https://uzairname.org',
       ]
       return allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
     },

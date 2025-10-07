@@ -43,11 +43,11 @@ function AppSidebarContent() {
   useEffect(() => {
     if (!user) {
       // User logged out: reset the query to clear cached data without triggering refetch
-      utils.userAdmin.getCurrentRole.reset()
+      void utils.userAdmin.getCurrentRole.reset()
     }
     // When user logs in, the enabled flag will automatically trigger a fetch
     // No need to manually invalidate
-  }, [user?.id, utils])
+  }, [user, utils])
 
   return (
     <>

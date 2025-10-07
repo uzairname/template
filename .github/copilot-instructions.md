@@ -5,6 +5,7 @@
 This is a **Turborepo monorepo** deploying to **Cloudflare Workers** with **Next.js apps**, **tRPC API**, **Supabase auth**, **Drizzle ORM**, and **Terraform-managed infrastructure**.
 
 ### Stack
+
 - **Runtime**: Cloudflare Workers (edge runtime constraints apply)
 - **Framework**: Next.js 15 with OpenNext Cloudflare adapter (`@opennextjs/cloudflare`)
 - **Auth**: Supabase (cookie-based sessions)
@@ -15,6 +16,7 @@ This is a **Turborepo monorepo** deploying to **Cloudflare Workers** with **Next
 - **Package Manager**: pnpm with workspace protocol
 
 ### Monorepo Structure
+
 ```
 apps/
   admin/        → Next.js admin dashboard (port 3000)
@@ -31,6 +33,7 @@ packages/
 ## Critical Patterns
 
 ### 1. Authentication Flow (Supabase + tRPC)
+
 **Client → Middleware → API → Protected Procedures**
 
 - **Client cookies**: Supabase session stored in HttpOnly cookies
@@ -42,6 +45,7 @@ packages/
   - `rootProcedure`: Requires `APP_KEY` in Authorization header
 
 **Key files**:
+
 - `packages/api/src/lib/supabase.ts` - Cookie parsing for Workers runtime
 - `apps/admin/src/utils/supabase/` - Client/server/middleware Supabase helpers
 - `packages/api/src/middlewares.ts` - All auth middlewares
@@ -51,10 +55,12 @@ packages/
 ### 2. Database & Schema Management
 
 **Schema location**: `packages/db/src/schema/`
+
 - `auth.ts` - Supabase auth schema reference (read-only)
 - `public.ts` - Custom tables (e.g., `users` table with roles)
 
 **Migration workflow**:
+
 ```bash
 cd packages/db
 npx drizzle-kit generate  # Generate SQL from schema changes
@@ -62,6 +68,7 @@ npx drizzle-kit generate  # Generate SQL from schema changes
 ```
 
 **DB client pattern**:
+
 ```typescript
 import { createClient } from '@repo/db'
 const db = createClient(env.POSTGRES_URI)
@@ -70,6 +77,7 @@ const db = createClient(env.POSTGRES_URI)
 **Important**: Use `eq()` from `drizzle-orm` for WHERE clauses, not raw SQL.
 
 **Usage in components**:
+
 ```tsx
 import { trpc } from '@/utils/trpc/client'
 const { data } = trpc.userAdmin.getAllUsers.useQuery()
@@ -79,11 +87,13 @@ const mutation = trpc.userAdmin.setUserRole.useMutation()
 ### 3. Cloudflare Workers Constraints
 
 **What DOESN'T work**:
+
 - ❌ `process.env` (use `env` from context)
 - ❌ Node.js APIs (`fs`, `path`, etc.)
 - ❌ Long-running tasks (10ms CPU limit)
 
 **Pattern for env vars**:
+
 ```typescript
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 
@@ -101,6 +111,7 @@ function example() {
 - Based on [shadcn/ui](https://ui.shadcn.com/) with Tailwind CSS
 
 Install new components via:
+
 ```bash
 cd packages/ui
 pnpm dlx shadcn@latest add <component-name>
@@ -109,17 +120,20 @@ pnpm dlx shadcn@latest add <component-name>
 ### 5. ESLint Configuration
 
 **Three configs** (`packages/eslint-config/`):
+
 - `base.js` - TypeScript, no console (for packages)
 - `react.js` - React/Next.js apps (extends base)
 - `node.js` - Workers/server (allows console, extends base)
 
 **Commands**:
+
 ```bash
 pnpm lint        # Check all packages
 pnpm lint:fix    # Auto-fix all packages
 ```
 
 ### Schema Changes
+
 ```bash
 # 1. Edit packages/db/src/schema/public.ts
 # 2. Generate migration
@@ -128,6 +142,7 @@ cd packages/db && npx drizzle-kit generate
 ```
 
 ### Adding New Procedures
+
 ```typescript
 // packages/api/src/routers/your-router.ts
 import { authenticatedProcedure, router } from '../trpc'
@@ -149,6 +164,7 @@ export const yourRouter = router({
 ## Environment Variables
 
 ### Required for admin app (`.env.local`):
+
 ```env
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8989  # tRPC endpoint
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
@@ -156,6 +172,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxx...
 ```
 
 ### Worker secrets (managed via GitHub Actions):
+
 - `POSTGRES_URI` - Database connection string
 - `SUPABASE_SERVICE_ROLE_KEY` - Server-side Supabase key
 - `APP_KEY` - Root access key for admin operations
