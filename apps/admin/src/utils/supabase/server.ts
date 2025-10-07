@@ -14,20 +14,7 @@ export async function createClient() {
       },
       setAll(cookiesToSet) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            // For production: set cookies on parent domain to work across subdomains
-            const cookieOptions = {
-              ...options,
-              domain: env.ENVIRONMENT === 'production' ? '.uzairname.org' : options?.domain,
-              sameSite: (env.ENVIRONMENT === 'production' ? 'none' : options?.sameSite) as
-                | 'lax'
-                | 'strict'
-                | 'none'
-                | undefined,
-              secure: env.ENVIRONMENT === 'production' ? true : options?.secure,
-            }
-            cookieStore.set(name, value, cookieOptions)
-          })
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
         } catch {
           // The `setAll` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing

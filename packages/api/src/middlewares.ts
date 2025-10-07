@@ -62,16 +62,7 @@ const isAdmin = t.middleware(async ({ ctx, next }) => {
   const supabase = createSupabaseClient(ctx.req, ctx.env)
   const {
     data: { session },
-    error,
   } = await supabase.auth.getSession()
-
-  // Debug logging
-  console.log('[Backend Admin] Session check:', {
-    hasSession: !!session,
-    userId: session?.user?.id,
-    error: error?.message,
-    cookieHeader: ctx.req.headers.get('cookie') ? 'present' : 'missing',
-  })
 
   if (!session) {
     throw new TRPCError({

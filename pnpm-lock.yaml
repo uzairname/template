@@ -245,6 +245,9 @@ importers:
       '@repo/db':
         specifier: workspace:*
         version: link:../db
+      '@sentry/cloudflare':
+        specifier: ^10.17.0
+        version: 10.17.0
       '@supabase/ssr':
         specifier: ^0.7.0
         version: 0.7.0(@supabase/supabase-js@2.58.0)

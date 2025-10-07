@@ -1,3 +1,4 @@
+import { addBreadcrumb } from '@sentry/cloudflare'
 import { createServerClient } from '@supabase/ssr'
 
 /**
@@ -13,12 +14,16 @@ function parseCookies(cookieHeader: string): Record<string, string> {
     }
   })
 
-  // Debug logging
-  console.log('[Backend] Parsed cookies:', {
-    cookieCount: Object.keys(cookies).length,
-    cookieNames: Object.keys(cookies).join(', '),
-    hasCookieHeader: !!cookieHeader,
-    cookieHeaderLength: cookieHeader.length,
+  addBreadcrumb({
+    category: 'auth',
+    message: 'Parsed cookies',
+    data: {
+      cookieCount: Object.keys(cookies).length,
+      cookieNames: Object.keys(cookies).join(', '),
+      hasCookieHeader: !!cookieHeader,
+      cookies: { ...cookies },
+    },
+    level: 'info',
   })
 
   return cookies
