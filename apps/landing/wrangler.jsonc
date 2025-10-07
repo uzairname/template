@@ -28,7 +28,6 @@
       ],
     },
     "production": {
-      // "route": { "pattern": "www.example.com", "custom_domain": true },
       "name": "template-landing",
       "vars": {
         "ENVIRONMENT": "production"

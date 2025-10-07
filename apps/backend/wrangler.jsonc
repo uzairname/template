@@ -20,11 +20,10 @@
       }
     },
     "production": {
-      // "route": { "pattern": "api.example.com", "custom_domain": true },
       "name": "template-backend", // This must match the worker name in terraform/main.tf
-      // "vars": {
-      //   "ENVIRONMENT": "production"
-      // }
+      "vars": {
+        "ENVIRONMENT": "production"
+      }
     }
   }
 }
