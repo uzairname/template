@@ -36,18 +36,18 @@ function AppSidebarContent() {
     enabled: !!user, // Only fetch if user is logged in
     retry: false, // Don't retry on auth errors
     refetchOnWindowFocus: false, // Don't refetch on window focus to avoid unnecessary calls
+    staleTime: Infinity, // Keep data fresh to avoid unnecessary refetches
   })
 
-  // Reset role query when user logs out, invalidate when user logs in
+  // Reset role query when user logs out or changes
   useEffect(() => {
     if (!user) {
-      // User logged out: reset the query to clear cached data
-      void utils.userAdmin.getCurrentRole.reset()
-    } else {
-      // User logged in: invalidate to fetch fresh data
-      void utils.userAdmin.getCurrentRole.invalidate()
+      // User logged out: reset the query to clear cached data without triggering refetch
+      utils.userAdmin.getCurrentRole.reset()
     }
-  }, [user?.id, utils, user])
+    // When user logs in, the enabled flag will automatically trigger a fetch
+    // No need to manually invalidate
+  }, [user?.id, utils])
 
   return (
     <>
@@ -93,15 +93,17 @@ function AppSidebarContent() {
                   align="end"
                   sideOffset={4}
                 >
-                  {user && roleData ? (
+                  {user ? (
                     <>
-                      <>
-                        <DropdownMenuLabel className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
-                          <BadgeCheck className="w-4 h-4" />
-                          Role: {roleData.roleLabel}
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                      </>
+                      {roleData && (
+                        <>
+                          <DropdownMenuLabel className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
+                            <BadgeCheck className="w-4 h-4" />
+                            Role: {roleData.roleLabel}
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
                       <DropdownMenuItem onClick={signOut}>
                         <LogOut className="w-4 h-4 mr-2" />
                         Sign out
