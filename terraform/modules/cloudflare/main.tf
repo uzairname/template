@@ -55,7 +55,7 @@ resource "cloudflare_r2_bucket" "r2_bucket" {
 
 resource "cloudflare_workers_route" "route-backend" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
-  pattern = "uzairname.org/api/*"
+  pattern = "admin.uzairname.org/api/*"
   script = cloudflare_worker.worker-backend.name
 }
 
