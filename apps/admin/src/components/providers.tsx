@@ -32,62 +32,22 @@ function getQueryClient() {
 function TRPCProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
 
-  // Get backend URL from Cloudflare runtime env (production) or fallback to local dev
-  const getBackendUrl = () => {
-    try {
-      const { getCloudflareContext } = require('@opennextjs/cloudflare')
-      const { env } = getCloudflareContext()
-      console.log('[tRPC] Using backend URL from CloudflareEnv:', env.BACKEND_BASE_URL)
-      return env.BACKEND_BASE_URL
-    } catch {
-      // In development or when Cloudflare context is not available
-      const fallbackUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8989'
-      console.log('[tRPC] Using fallback backend URL:', fallbackUrl)
-      return fallbackUrl
-    }
-  }
-
-  const [trpcClient] = React.useState(() => {
-    const backendUrl = getBackendUrl()
-    const fullUrl = `${backendUrl}/api/trpc`
-    console.log('[tRPC] Creating tRPC client with URL:', fullUrl)
-
-    return trpc.createClient({
+  const [trpcClient] = React.useState(() =>
+    trpc.createClient({
       links: [
         httpBatchLink({
-          url: fullUrl,
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/trpc`,
           // Important: Include credentials (cookies) in every request
           fetch(url, options) {
-            console.log('[tRPC] Outgoing request:', {
-              url,
-              method: options?.method,
-              credentials: 'include',
-              headers: options?.headers,
-            })
-
             return fetch(url, {
               ...options,
               credentials: 'include',
-            }).then((response) => {
-              console.log('[tRPC] Response received:', {
-                url,
-                status: response.status,
-                statusText: response.statusText,
-                ok: response.ok,
-              })
-              return response
-            }).catch((error) => {
-              console.error('[tRPC] Request failed:', {
-                url,
-                error: error.message,
-              })
-              throw error
             })
           },
         }),
       ],
     })
-  })
+  )
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>

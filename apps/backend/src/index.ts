@@ -17,25 +17,8 @@ app.use(
         'http://localhost:3000',
         'https://admin.uzairname.org',
         'https://uzairname.org',
-        'https://template-admin.5r.workers.dev', // Production workers.dev URL
       ]
-      const isAllowed = allowedOrigins.includes(origin)
-      const selectedOrigin = isAllowed ? origin : allowedOrigins[0]
-      
-      // Log CORS decision
-      addBreadcrumb({
-        category: 'cors',
-        message: 'CORS origin check',
-        level: 'info',
-        data: {
-          requestOrigin: origin,
-          isAllowed,
-          selectedOrigin,
-          allowedOrigins,
-        },
-      })
-      
-      return selectedOrigin
+      return allowedOrigins.includes(origin) ? origin : allowedOrigins[0]
     },
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -49,10 +32,8 @@ app.use('*', async (c, next) => {
   const method = c.req.method
   const url = c.req.url
   const path = new URL(url).pathname
-  const origin = c.req.header('origin')
-  const cookieHeader = c.req.header('cookie')
 
-  // Add breadcrumb for the request with headers
+  // Add breadcrumb for the request
   addBreadcrumb({
     category: 'http',
     message: `Received request: ${method} ${path}`,
@@ -60,10 +41,6 @@ app.use('*', async (c, next) => {
     data: {
       url,
       method,
-      origin,
-      hasCookies: !!cookieHeader,
-      cookieCount: cookieHeader ? cookieHeader.split(';').length : 0,
-      cookieHeader: cookieHeader?.substring(0, 100), // First 100 chars for debugging
     },
   })
 

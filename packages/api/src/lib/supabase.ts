@@ -24,18 +24,6 @@ export function createSupabaseClient(req: Request, env: CloudflareEnv) {
   const cookieHeader = req.headers.get('cookie') || ''
   const cookies = parseCookies(cookieHeader)
 
-  // Log cookie parsing for debugging
-  const supabaseCookies = Object.keys(cookies).filter(
-    (key) => key.startsWith('sb-') || key.includes('auth-token')
-  )
-
-  console.log('[Supabase] Parsing cookies:', {
-    totalCookies: Object.keys(cookies).length,
-    supabaseCookies: supabaseCookies,
-    hasSupabaseCookies: supabaseCookies.length > 0,
-    cookieNames: Object.keys(cookies),
-  })
-
   return createServerClient(env.SUPABASE_PUBLIC_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
     cookies: {
       getAll() {
