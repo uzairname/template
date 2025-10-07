@@ -39,6 +39,11 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
           url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/trpc`,
           // Important: Include credentials (cookies) in every request
           fetch(url, options) {
+            console.log('[tRPC Client] Making request:', {
+              url,
+              credentials: 'include',
+              headers: options?.headers,
+            })
             return fetch(url, {
               ...options,
               credentials: 'include',

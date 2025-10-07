@@ -13,6 +13,14 @@ function parseCookies(cookieHeader: string): Record<string, string> {
     }
   })
 
+  // Debug logging
+  console.log('[Backend] Parsed cookies:', {
+    cookieCount: Object.keys(cookies).length,
+    cookieNames: Object.keys(cookies).join(', '),
+    hasCookieHeader: !!cookieHeader,
+    cookieHeaderLength: cookieHeader.length,
+  })
+
   return cookies
 }
 

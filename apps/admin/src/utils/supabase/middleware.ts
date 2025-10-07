@@ -40,7 +40,21 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: DO NOT REMOVE auth.getUser()
 
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
+  // Debug logging for production
+  console.log('[Middleware] Session check:', {
+    hasUser: !!user,
+    userId: user?.id,
+    error: error?.message,
+    cookies: request.cookies
+      .getAll()
+      .map((c) => c.name)
+      .join(', '),
+  })
 
   return supabaseResponse
 }
