@@ -23,10 +23,10 @@
       },
     },
     "production": {
-      "name": "template-admin", // <project_name>-admin. Must match project name in terraform/main.tf
+      "name": "template-admin",
       "route": {
         "pattern": "admin.uzairname.org/*",
-        "custom_domain": true
+        "zone_id": "27509b89a6498d16040bb49d97d710a1"
       },
       "vars": {
         "ENVIRONMENT": "production",

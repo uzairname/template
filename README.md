@@ -2,19 +2,9 @@ This is a template
 
 # Setup
 
-These instructions are for MacOS
-
 ## One time:
 
-Create a Supabase, Cloudflare, Terraform Cloud, and Sentry account.
-
-## Once per project:
-
-### Clone Template
-
-Clone the template. Create a new repo if making a separate project.
-
-### Set Github Secrets
+Create a Supabase, Cloudflare, Terraform Cloud, and Sentry account. Save the following variables somewhere:
 
 Add the following variables to github actions. They can be the same across projects:
 
@@ -35,56 +25,48 @@ Add the following variables to github actions. They can be the same across proje
   - team: read and write
   - project: read and write
 
-### (Optional) Set Names
+## Once per project:
 
-If you want to change the name to something other than `template`, do the following:
+### Clone Template
 
-1. Envure that the **project name** is consistent across:
+Clone the template. Create a new repo if making a separate project. Add the above secrets to github secrets
 
-- The _env_ of `.github/workflows/provision.yml`
+### Set Project Name
 
-- The _name of the R2 binding_ in the `.wrangler.jsonc` of each nextjs app (this must match the name in `cloudflare/main.tf`)
+To change the name to something other than `template`, do the following:
+Specify the **project name** at the top of `.github/workflows/provision.yml`. This tells terraform what all the resources should called. Then ensure that it is consistent across:
+- The *name* and the r2 binding's *bucket_name* under the production environment field of each frontend `wrangler.jsonc` (Resource is created in `terraform/cloudflare/main.tf`)
+- The sentry configuration in `apps/**/next.config.ts` (Resource is created in `terraform/sentry/main.tf`)
+- The _workspace_ name in `terraform/main.tf` (Avoid overlapping with another workspace in your organization)
+- (Optional. For local dev) Project name in `supabase/config.toml`
 
-2. Ensure that the **worker names** are consistent across:
+### Set Domains
 
-- The relevant `apps/**/wrangler.jsonc` files
-- `terraform/cloudflare/main.tf`
-- The _cloudflare-secrets_ step of `.github/workflows/provision.yml`
+To configure your production domain, ensure that the domain names and base URLs are consistent across:
 
-The convention is for the worker name to follow the format "project_name-app_name", where app_name is something like api, admin, etc
+1. The "locals" field in `terraform/main.tf`
+2. NEXT_PUBLIC_BACKEND_URL in `.github/workflows/deploy.yml`
+3. The variables, routes, and zone ids in each `apps/**/wrangler.jsonc`
+4. CORS policy in `apps/backend/src/index.ts`
 
-3. Set the terraform cloud workspace name
+### First Time Deployment
 
-- The _workspace_ name in `terraform/main.tf` (doesn't have to match anything else, but be unique)
+Push the code and run the "provision" github action
 
-### (Optional) Set Apps
+# Development
 
-If you add or modify cloudflare worker apps inside an `apps` directory, such as `apps/your-app`, update the relevant package.jsons, and then ensure that their names are consistent across:
+## Adding apps
 
-- `apps/your-app/wrangler.jsonc`
+To add apps other than "admin", "landing", or "backend", update the relevant package.jsons, and then ensure that their names are consistent across:
+
+- `apps/**/wrangler.jsonc`
 - The matrix in `.github/workflows/deploy.yml` and `.github/workflows/provision.yml`
 - `terraform/cloudflare/main.tf`
 - `terraform/sentry/main.tf`: Update the sentry projects accordingly.
 
-### (Optional) Set Domains
-
-To configure your production domain, ensure that the domain names and base URLs are up to date in:
-
-1. The "locals" field in `terraform/main.tf`
-
-2. NEXT_PUBLIC_BACKEND_URL in `.github/workflows/deploy.yml`
-
-3. The variables and routes in each `apps/**/wrangler.jsonc`
-
-4. CORS policy in `apps/backend/src/index.ts`
-
-### Run Github Action
-
-Once terraform is set up, push the code to github and run the "provision" and "deploy" workflow
-
-# Development
-
 ## Supabase (Optional; only for local development)
+
+Set the project name and any extra configuration in `supabase/config.toml`
 
 ```bash
 # Start and run local supabase container
@@ -95,12 +77,7 @@ npx supabase start
 
 ## Migrations
 
-To deploy changes to `packages/db/src/schema`, run
-
-```bash
-# Generate migrations.
-cd packages/db && npx drizzle-kit generate
-```
+After making changes to `packages/db/src/schema`, run `npx drizzle-kit generate` from the `packages/db` directory
 
 The next time the app is deployed, migrations will be applied
 
@@ -163,15 +140,14 @@ Relevant Docs:
 
 No dev deployment setup yet
 
-# Reference
+# Notes
 
-https://developers.cloudflare.com/workers/wrangler/configuration/
-https://ui.shadcn.com/docs/monorepo
+Supabase projects are immutable after creation. You cannot change the database password after creation. To do so, manually reset the password in the supabase dashboard, then update the secret wherever it's stored
 
-# Project setup
+## Project setup
 
 `packages/api`: API package with tRPC router and context, to be served by @repo/backend
 
-# Managing Infra
-
-Supabase projects are immutable after creation. You cannot change the database password after creation. To do so, manually reset the password in the supabase dashboard, then update
+## Reference
+https://developers.cloudflare.com/workers/wrangler/configuration/
+https://ui.shadcn.com/docs/monorepo

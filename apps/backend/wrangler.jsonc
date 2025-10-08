@@ -20,10 +20,10 @@
       }
     },
     "production": {
-      "name": "template-backend", // <project_name>-backend. Must match project name in terraform/main.tf
+      "name": "template-backend",
       "route": {
         "pattern": "uzairname.org/api/*",
-        "custom_domain": true
+        "zone_id": "27509b89a6498d16040bb49d97d710a1"
       },
       "vars": {
         "ENVIRONMENT": "production"
