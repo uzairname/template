@@ -60,32 +60,32 @@ resource "cloudflare_worker" "worker-backend" {
   name = "${var.project_name}-backend"
 }
 
-# resource "cloudflare_worker_version" "worker-backend-version" {
-#   account_id = var.account_id
-#   worker_id = cloudflare_worker.worker-backend.id
+resource "cloudflare_worker_version" "worker-backend-version" {
+  account_id = var.account_id
+  worker_id = cloudflare_worker.worker-backend.id
 
-#   modules = [{
-#     name = "index.js"
-#     content_file = "index.js"
-#     content_type = "application/javascript+module"
-#   }]
+  modules = [{
+    name = "index.js"
+    content_file = "index.js"
+    content_type = "application/javascript+module"
+  }]
 
-#   main_module = "index.js"
+  main_module = "index.js"
 
-#   lifecycle {
-#     ignore_changes = [modules, main_module]
-#   }
+  lifecycle {
+    ignore_changes = [modules, main_module]
+  }
 
-#   bindings = [
-#     {
-#       name = "ENVIRONMENT"
-#       type = "plain_text"
-#       text = "production"
-#     }
-#   ]
+  bindings = [
+    {
+      name = "ENVIRONMENT"
+      type = "plain_text"
+      text = "production"
+    }
+  ]
 
-#   depends_on = [cloudflare_worker.worker-backend]
-# }
+  depends_on = [cloudflare_worker.worker-backend]
+}
 
 resource "cloudflare_workers_route" "route-backend" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
@@ -105,46 +105,46 @@ resource "cloudflare_worker" "worker-admin" {
   name = "${var.project_name}-admin"
 }
 
-# resource "cloudflare_worker_version" "worker-admin-version" {
-#   account_id = var.account_id
-#   worker_id = cloudflare_worker.worker-admin.id
+resource "cloudflare_worker_version" "worker-admin-version" {
+  account_id = var.account_id
+  worker_id = cloudflare_worker.worker-admin.id
 
-#   modules = [{
-#     name = "index.js"
-#     content_file = "index.js"
-#     content_type = "application/javascript+module"
-#   }]
+  modules = [{
+    name = "index.js"
+    content_file = "index.js"
+    content_type = "application/javascript+module"
+  }]
 
-#   main_module = "index.js"
+  main_module = "index.js"
 
-#   lifecycle {
-#     ignore_changes = [modules, main_module]
-#   }
+  lifecycle {
+    ignore_changes = [modules, main_module]
+  }
 
-#   bindings = [
-#     {
-#       name = "NEXT_INC_CACHE_R2_BUCKET"
-#       type = "r2_bucket"
-#       bucket_name = cloudflare_r2_bucket.r2_bucket.name
-#       account_id = var.account_id
-#     },
-#     {
-#       name = "ENVIRONMENT"
-#       type = "plain_text"
-#       text = "production"
-#     },
-#     {
-#       name = "ADMIN_BASE_URL"
-#       type = "plain_text"
-#       text = var.admin_url
-#     }
-#   ]
+  bindings = [
+    {
+      name = "NEXT_INC_CACHE_R2_BUCKET"
+      type = "r2_bucket"
+      bucket_name = cloudflare_r2_bucket.r2_bucket.name
+      account_id = var.account_id
+    },
+    {
+      name = "ENVIRONMENT"
+      type = "plain_text"
+      text = "production"
+    },
+    {
+      name = "ADMIN_BASE_URL"
+      type = "plain_text"
+      text = var.admin_url
+    }
+  ]
 
-#   depends_on = [
-#     cloudflare_worker.worker-admin,
-#     cloudflare_r2_bucket.r2_bucket
-#   ]
-# }
+  depends_on = [
+    cloudflare_worker.worker-admin,
+    cloudflare_r2_bucket.r2_bucket
+  ]
+}
 
 resource "cloudflare_workers_route" "route-admin" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
@@ -165,41 +165,41 @@ resource "cloudflare_worker" "worker-landing" {
 }
 
 
-# resource "cloudflare_worker_version" "worker-landing-version" {
-#   account_id = var.account_id
-#   worker_id = cloudflare_worker.worker-landing.id
+resource "cloudflare_worker_version" "worker-landing-version" {
+  account_id = var.account_id
+  worker_id = cloudflare_worker.worker-landing.id
 
-#   modules = [{
-#     name = "index.js"
-#     content_file = "index.js"
-#     content_type = "application/javascript+module"
-#   }]
+  modules = [{
+    name = "index.js"
+    content_file = "index.js"
+    content_type = "application/javascript+module"
+  }]
 
-#   main_module = "index.js"
+  main_module = "index.js"
 
-#   lifecycle {
-#     ignore_changes = [modules, main_module]
-#   }
+  lifecycle {
+    ignore_changes = [modules, main_module]
+  }
 
-#   bindings = [
-#     {
-#       name = "NEXT_INC_CACHE_R2_BUCKET"
-#       type = "r2_bucket"
-#       bucket_name = cloudflare_r2_bucket.r2_bucket.name
-#       account_id = var.account_id
-#     },
-#     {
-#       name = "ENVIRONMENT"
-#       type = "plain_text"
-#       text = "production"
-#     }
-#   ]
+  bindings = [
+    {
+      name = "NEXT_INC_CACHE_R2_BUCKET"
+      type = "r2_bucket"
+      bucket_name = cloudflare_r2_bucket.r2_bucket.name
+      account_id = var.account_id
+    },
+    {
+      name = "ENVIRONMENT"
+      type = "plain_text"
+      text = "production"
+    }
+  ]
 
-#   depends_on = [
-#     cloudflare_worker.worker-landing,
-#     cloudflare_r2_bucket.r2_bucket
-#   ]
-# }
+  depends_on = [
+    cloudflare_worker.worker-landing,
+    cloudflare_r2_bucket.r2_bucket
+  ]
+}
 
 
 resource "cloudflare_workers_route" "route-landing" {
