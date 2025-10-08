@@ -1,7 +1,7 @@
 {
-	"$schema": "../../packages/utils/wrangler-config-schema.json",
-	"name": "template-api",
-	"main": "src/index.ts",
+  "$schema": "../../packages/utils/wrangler-config-schema.json",
+  "name": "template-api",
+  "main": "src/index.ts",
   "compatibility_date": "2025-03-01",
   "compatibility_flags": [
     "nodejs_compat",
@@ -21,6 +21,19 @@
     },
     "production": {
       "name": "template-backend", // <project_name>-backend. Must match project name in terraform/main.tf
+      "route": {
+        "pattern": "uzairname.org/api/*",
+        "custom_domain": true
+      },
+      "vars": {
+        "ENVIRONMENT": "production"
+      },
+      "r2_buckets": [
+        {
+          "binding": "NEXT_INC_CACHE_R2_BUCKET",
+          "bucket_name": "template",
+        }
+      ],
     }
   }
 }

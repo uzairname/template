@@ -27,11 +27,8 @@ terraform {
 # ---- LOCALS ----
 
 locals {
-  backend_url = "https://uzairname.org"
   admin_url = "https://admin.uzairname.org"
-  landing_url = "https://uzairname.org"
 }
-
 
 # ---- VARIABLES ----
 
@@ -99,9 +96,6 @@ module "cloudflare" {
   account_id = var.cloudflare_account_id
   cloudflare_api_token = var.cloudflare_api_token
   project_name  = var.project_name
-  backend_url = local.backend_url
-  admin_url = local.admin_url
-  landing_url = local.landing_url
 }
 
 # Sentry

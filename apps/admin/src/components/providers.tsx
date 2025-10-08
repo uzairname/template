@@ -1,6 +1,7 @@
 'use client'
 
 import { trpc } from '@/utils/trpc/client'
+import { nonNullable } from '@repo/utils/index'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { httpBatchLink } from '@trpc/client'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
@@ -36,7 +37,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/trpc`,
+          url: `${nonNullable(process.env.NEXT_PUBLIC_BACKEND_URL, 'NEXT_PUBLIC_BACKEND_URL')}/api/trpc`,
           // Important: Include credentials (cookies) in every request
           fetch(url, options) {
             console.log('[tRPC Client] Making request:', {

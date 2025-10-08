@@ -20,15 +20,22 @@
       "vars": {
         "ENVIRONMENT": "development"
       },
+    },
+    "production": {
+      "name": "template-landing", // <project_name>-landing. Must match project name in terraform/main.tf
+      "route": {
+        "pattern": "uzairname.org/*",
+        "custom_domain": true
+      },
+      "vars": {
+        "ENVIRONMENT": "production"
+      },
       "r2_buckets": [
         {
           "binding": "NEXT_INC_CACHE_R2_BUCKET",
           "bucket_name": "template",
         }
-      ],
-    },
-    "production": {
-      "name": "template-landing", // <project_name>-landing. Must match project name in terraform/main.tf
+      ]
     }
   }
 }

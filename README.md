@@ -74,7 +74,7 @@ To configure your production domain, ensure that the domain names and base URLs 
 
 2. NEXT_PUBLIC_BACKEND_URL in `.github/workflows/deploy.yml`
 
-3. `..._BASE_URL` Variables in each wrangler.jsonc file
+3. The variables and routes in each `apps/**/wrangler.jsonc`
 
 4. CORS policy in `apps/backend/src/index.ts`
 

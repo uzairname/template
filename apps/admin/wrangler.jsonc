@@ -21,15 +21,23 @@
         "ENVIRONMENT": "development",
         "ADMIN_BASE_URL": "http://localhost:3000"
       },
+    },
+    "production": {
+      "name": "template-admin", // <project_name>-admin. Must match project name in terraform/main.tf
+      "route": {
+        "pattern": "admin.uzairname.org/*",
+        "custom_domain": true
+      },
+      "vars": {
+        "ENVIRONMENT": "production",
+        "ADMIN_BASE_URL": "https://admin.uzairname.org"
+      },
       "r2_buckets": [
         {
           "binding": "NEXT_INC_CACHE_R2_BUCKET",
           "bucket_name": "template",
         }
-      ],
-    },
-    "production": {
-      "name": "template-admin" // <project_name>-admin. Must match project name in terraform/main.tf
+      ]
     }
   }
 }
