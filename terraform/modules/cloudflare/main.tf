@@ -237,4 +237,3 @@ resource "cloudflare_workers_route" "landing-route" {
 
   depends_on = [cloudflare_workers_deployment.landing-deployment]
 }
-
