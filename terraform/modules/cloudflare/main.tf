@@ -55,14 +55,14 @@ resource "cloudflare_r2_bucket" "r2_bucket" {
 # Cloudflare Worker resources
 
 # Backend
-resource "cloudflare_worker" "worker-backend" {
+resource "cloudflare_worker" "backend-worker" {
   account_id = var.account_id
   name = "${var.project_name}-backend"
 }
 
-resource "cloudflare_worker_version" "worker-backend-version" {
+resource "cloudflare_worker_version" "backend-version" {
   account_id = var.account_id
-  worker_id = cloudflare_worker.worker-backend.id
+  worker_id = cloudflare_worker.backend-worker.id
 
   modules = [{
     name = "index.js"
@@ -84,30 +84,40 @@ resource "cloudflare_worker_version" "worker-backend-version" {
     }
   ]
 
-  depends_on = [cloudflare_worker.worker-backend]
+  depends_on = [cloudflare_worker.backend-worker]
 }
 
-resource "cloudflare_workers_route" "route-backend" {
+resource "cloudflare_workers_deployment" "backend-deployment" {
+  account_id = var.account_id
+  script_name = cloudflare_worker.backend-worker.name
+  strategy = "percentage"
+
+  versions = [{
+    percentage = 100
+    version_id = cloudflare_worker_version.backend-version.id
+  }]
+
+  depends_on = [cloudflare_worker_version.backend-version]
+}
+
+resource "cloudflare_workers_route" "backend-route" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
   pattern = "${var.backend_url}/api/*"
-  script = cloudflare_worker.worker-backend.name
+  script = cloudflare_worker.backend-worker.name
 
-  depends_on = [
-    cloudflare_worker.worker-backend,
-    # cloudflare_worker_version.worker-backend-version
-  ]
+  depends_on = [cloudflare_workers_deployment.backend-deployment]
 }
 
 
 # Admin dashboard
-resource "cloudflare_worker" "worker-admin" {
+resource "cloudflare_worker" "admin-worker" {
   account_id = var.account_id
   name = "${var.project_name}-admin"
 }
 
-resource "cloudflare_worker_version" "worker-admin-version" {
+resource "cloudflare_worker_version" "admin-version" {
   account_id = var.account_id
-  worker_id = cloudflare_worker.worker-admin.id
+  worker_id = cloudflare_worker.admin-worker.id
 
   modules = [{
     name = "index.js"
@@ -140,34 +150,43 @@ resource "cloudflare_worker_version" "worker-admin-version" {
     }
   ]
 
-  depends_on = [
-    cloudflare_worker.worker-admin,
-    cloudflare_r2_bucket.r2_bucket
-  ]
+  depends_on = [cloudflare_worker.admin-worker]
 }
 
-resource "cloudflare_workers_route" "route-admin" {
+
+resource "cloudflare_workers_deployment" "admin-deployment" {
+  account_id = var.account_id
+  script_name = cloudflare_worker.admin-worker.name
+  strategy = "percentage"
+
+  versions = [{
+    percentage = 100
+    version_id = cloudflare_worker_version.admin-version.id
+  }]
+
+  depends_on = [cloudflare_worker_version.admin-version]
+}
+
+
+resource "cloudflare_workers_route" "admin-route" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
   pattern = "${var.admin_url}/*"
-  script = cloudflare_worker.worker-admin.name
+  script = cloudflare_worker.admin-worker.name
 
-  depends_on = [
-    cloudflare_worker.worker-admin,
-    # cloudflare_worker_version.worker-admin-version
-  ]
+  depends_on = [cloudflare_workers_deployment.admin-deployment]
 }
 
 
 # Landing page
-resource "cloudflare_worker" "worker-landing" {
+resource "cloudflare_worker" "landing-worker" {
   account_id = var.account_id
   name = "${var.project_name}-landing"
 }
 
 
-resource "cloudflare_worker_version" "worker-landing-version" {
+resource "cloudflare_worker_version" "landing-version" {
   account_id = var.account_id
-  worker_id = cloudflare_worker.worker-landing.id
+  worker_id = cloudflare_worker.landing-worker.id
 
   modules = [{
     name = "index.js"
@@ -195,21 +214,27 @@ resource "cloudflare_worker_version" "worker-landing-version" {
     }
   ]
 
-  depends_on = [
-    cloudflare_worker.worker-landing,
-    cloudflare_r2_bucket.r2_bucket
-  ]
+  depends_on = [cloudflare_worker.landing-worker]
 }
 
+resource "cloudflare_workers_deployment" "landing-deployment" {
+  account_id = var.account_id
+  script_name = cloudflare_worker.landing-worker.name
+  strategy = "percentage"
 
-resource "cloudflare_workers_route" "route-landing" {
+  versions = [{
+    percentage = 100
+    version_id = cloudflare_worker_version.landing-version.id
+  }]
+
+  depends_on = [cloudflare_worker_version.landing-version]
+}
+
+resource "cloudflare_workers_route" "landing-route" {
   zone_id = "27509b89a6498d16040bb49d97d710a1"
   pattern = "${var.landing_url}/*"
-  script = cloudflare_worker.worker-landing.name
+  script = cloudflare_worker.landing-worker.name
 
-  depends_on = [
-    cloudflare_worker.worker-landing,
-    # cloudflare_worker_version.worker-landing-version
-  ]
+  depends_on = [cloudflare_workers_deployment.landing-deployment]
 }
 
