@@ -17,6 +17,7 @@ Add the following variables to github actions. They can be the same across proje
   - Account > Workers Scripts > Edit
   - Account > Account Settings > Read
   - Account > Workers R2 Storage > Edit
+  - Zone > Workers Routes > Edit
 - `SUPABASE_BEARER_TOKEN` Your Supabase user's API token
 - `SUPABASE_ORG_ID` Supabase organization id
 - `SENTRY_ORG_SLUG` Sentry organization slug

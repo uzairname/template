@@ -1,5 +1,6 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { getCookieDomainFromUrl } from '@repo/utils'
+import { addBreadcrumb } from '@sentry/nextjs'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -20,6 +21,16 @@ export async function updateSession(request: NextRequest) {
 
   const isProduction = env.ENVIRONMENT === 'production'
   const cookieDomain = isProduction ? getCookieDomainFromUrl(env.ADMIN_BASE_URL) : undefined
+
+  addBreadcrumb({
+    message: `Creating server client`,
+    level: 'info',
+    category: 'supabase',
+    data: {
+      isProduction,
+      cookieDomain,
+    }
+  })
 
   const supabase = createServerClient(url, key, {
     cookies: {
