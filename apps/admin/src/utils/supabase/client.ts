@@ -5,6 +5,8 @@ export function createClient() {
   const isProduction = isProductionEnvironment()
   const cookieDomain = isProduction ? getCookieDomainFromHostname() : undefined
 
+  console.log(`Is production: ${isProduction}, cookie domain: ${cookieDomain}`)
+
   return createBrowserClient(
     nonNullable(process.env.NEXT_PUBLIC_SUPABASE_URL, 'NEXT_PUBLIC_SUPABASE_URL'),
     nonNullable(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, 'NEXT_PUBLIC_SUPABASE_ANON_KEY'),

@@ -115,20 +115,9 @@ cd apps/backend && pnpm build
 
 ### eslint configs:
 
-1. **`base.js`** - Base TypeScript configuration for all packages
-   - Console statement warnings
-   - Promise handling rules
-
-2. **`react.js`** - Configuration for React/Next.js applications
-   - Extends base configuration
-   - React-specific rules
-   - React Hooks rules
-   - JSX validation
-
-3. **`node.js`** - Configuration for Node.js/Cloudflare Workers
-   - Extends base configuration
-   - Allows console statements (appropriate for server-side)
-   - Server-specific linting rules
+1. `base.js` - Base TypeScript configuration for all packages
+2. `react.js` - Configuration for React/Next.js applications
+3. `node.js` - Configuration for Node.js/Cloudflare Workers
 
 Relevant Docs:
 
