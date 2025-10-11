@@ -8,9 +8,11 @@ Create a Supabase, Cloudflare, Terraform Cloud, and Sentry account. Save the fol
 
 Add the following variables to github actions. They can be the same across projects:
 
-- `GH_PAT_FOR_SECRETS`
-- `TFC_ORGANIZATION` Terraform cloud organization
-- `TFC_TOKEN` Terraform cloud token
+- `GH_PAT_FOR_SECRETS` Github Personal Access Token with permissions:
+  - Read access to metadata
+  - Read and Write access to actions variables and secrets
+- `TFC_ORGANIZATION` Terraform Cloud organization name
+- `TFC_TOKEN` Terraform Cloud user API token
 - `APP_KEY` random url-safe string of your choosing
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_API_TOKEN` an API token with these permissions:
@@ -21,7 +23,7 @@ Add the following variables to github actions. They can be the same across proje
 - `SUPABASE_BEARER_TOKEN` Your Supabase user's API token
 - `SUPABASE_ORG_ID` Supabase organization id
 - `SENTRY_ORG_SLUG` Sentry organization slug
-- `SENTRY_AUTH_TOKEN` Your Sentry auth token, with the permissions:
+- `SENTRY_AUTH_TOKEN` Sentry personal auth token, with the permissions:
   - org: read
   - team: read and write
   - project: read and write
